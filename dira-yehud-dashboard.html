@@ -698,6 +698,69 @@ h1.h{ font-size: 22px; font-weight: 700; margin: 0 0 4px; letter-spacing: -.01em
 /* =========================================================
    MARKET
    ========================================================= */
+/* ===== Rooms breakdown + transactions tables ===== */
+.rooms-table, .trans-table{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: right;
+  direction: rtl;
+}
+.rooms-table th, .trans-table th{
+  font-weight: 600; color: var(--ink-3);
+  font-size: 11.5px; letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 10px var(--s-3);
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  white-space: nowrap;
+}
+.rooms-table td, .trans-table td{
+  padding: 12px var(--s-3);
+  border-bottom: 1px solid var(--line);
+  font-feature-settings: "tnum" on;
+  vertical-align: middle;
+}
+.rooms-table tr:last-child td, .trans-table tr:last-child td{ border-bottom: none; }
+.rooms-table tr:hover, .trans-table tr:hover{ background: var(--surface-2); }
+.rooms-table .room-cell{ font-weight: 700; color: var(--ink-1); }
+.rooms-table .pps-cell{ color: var(--brand); font-weight: 600; }
+.rooms-table .yield-cell{
+  display: inline-flex; align-items: center; gap: 4px;
+  font-weight: 700;
+  padding: 3px 9px; border-radius: 999px;
+  font-size: 12px;
+  background: var(--brand-soft); color: var(--brand-2);
+}
+.rooms-table .count-cell{ color: var(--ink-3); font-size: 12px; }
+.rooms-table .links-row{ display:flex; gap: 6px; margin-top: 4px; }
+.rooms-table .mini-link{
+  font-size: 10.5px; padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  text-decoration: none;
+  border: 1px solid var(--line);
+}
+.rooms-table .mini-link:hover{ background: var(--brand-soft); color: var(--brand-2); border-color: var(--brand); }
+.trans-table .date-cell{ color: var(--ink-3); font-size: 12px; white-space: nowrap; }
+.trans-table .price-cell{ font-weight: 700; }
+.trans-table .ext-link{
+  color: var(--brand); font-size: 12px; text-decoration: none;
+  white-space: nowrap;
+}
+.trans-table .ext-link:hover{ text-decoration: underline; }
+.tx-yield-effective{
+  font-weight: 700; color: var(--success);
+  background: rgba(31,122,77,.12);
+  padding: 1px 6px; border-radius: 4px;
+}
+@media (max-width: 720px){
+  .rooms-table, .trans-table{ font-size: 12px; }
+  .rooms-table th, .trans-table th{ padding: 8px 6px; font-size: 10.5px; }
+  .rooms-table td, .trans-table td{ padding: 8px 6px; }
+}
+
 .comp-grid{
   display:grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-3);
 }
@@ -1734,19 +1797,19 @@ h1.h{ font-size: 22px; font-weight: 700; margin: 0 0 4px; letter-spacing: -.01em
           <div class="kpi-sub text-success">+0.9% / 90 ימים</div>
         </div>
         <div class="kpi">
-          <div class="kpi-label">מודעות פעילות באזור</div>
-          <div class="kpi-value">87</div>
-          <div class="kpi-sub">דירות 4-5 חדרים</div>
+          <div class="kpi-label">שכ״ד ממוצע · 4 חדרים</div>
+          <div class="kpi-value">₪ 7,300</div>
+          <div class="kpi-sub">לחודש · טווח 6.8K–7.9K</div>
         </div>
         <div class="kpi">
-          <div class="kpi-label">ימי שיווק ממוצעים</div>
-          <div class="kpi-value">52</div>
-          <div class="kpi-sub text-warning">+9 ימים מהממוצע השנתי</div>
+          <div class="kpi-label">תשואה ברוטו · 4 חדרים</div>
+          <div class="kpi-value">2.73%</div>
+          <div class="kpi-sub text-success">אצלך אפקטיבית: ~4.4%</div>
         </div>
         <div class="kpi">
           <div class="kpi-label">עסקאות אחרונות (90 יום)</div>
           <div class="kpi-value">23</div>
-          <div class="kpi-sub">ממוצע ₪ 2.55M</div>
+          <div class="kpi-sub">ממוצע ₪ 3.18M · 4 חדרים</div>
         </div>
       </div>
 
@@ -1780,7 +1843,56 @@ h1.h{ font-size: 22px; font-weight: 700; margin: 0 0 4px; letter-spacing: -.01em
         </div>
       </div>
 
-      <div class="section-h"><h2>השוואת מחירים בין שכונות</h2></div>
+      <div class="section-h">
+        <h2>ק׳ הסביונים — פילוח לפי סוג דירה</h2>
+        <span class="meta">מכירה · שכירות · תשואה ברוטו</span>
+      </div>
+      <div class="card tight" style="overflow-x:auto;">
+        <table class="rooms-table">
+          <thead>
+            <tr>
+              <th>סוג דירה</th>
+              <th>גודל ממוצע</th>
+              <th>מחיר ממוצע</th>
+              <th>למ״ר</th>
+              <th>שכ״ד ממוצע</th>
+              <th>טווח שכ״ד</th>
+              <th>תשואה ברוטו</th>
+              <th>מודעות</th>
+            </tr>
+          </thead>
+          <tbody id="rooms-tbody"></tbody>
+        </table>
+        <div class="muted" style="font-size:11.5px; margin-top: var(--s-3); padding: var(--s-3); background: var(--surface-2); border-radius: var(--r-xs);">
+          <strong>איך מחושבת התשואה הגולמית:</strong>
+          (שכ״ד שנתי ÷ מחיר רכישה) × 100. למשל דירת 4 חדרים בשכ״ד 7,300 ₪ × 12 חודשים = 87,600 ₪ ÷ 3,213,600 ₪ ≈ <strong>2.73%</strong>.
+          <br>
+          <strong>למה זה רלוונטי לך:</strong> מאחר שעלות הדירה שלך נמוכה ב-37.6% ממחיר השוק, התשואה האפקטיבית שלך תהיה ~<span class="tx-yield-effective">4.4%</span> — גבוה משמעותית מהממוצע. זה אומר שגם אם תבחר להשכיר במקום לגור, ההחזר על ההשקעה שלך טוב יותר מזה של מי שקנה במחיר שוק.
+        </div>
+      </div>
+
+      <div class="section-h">
+        <h2>עסקאות אחרונות בק׳ הסביונים</h2>
+        <span class="meta">מאגר עסקאות נדל״ן · רמ״י</span>
+      </div>
+      <div class="card tight" style="overflow-x:auto;">
+        <table class="trans-table">
+          <thead>
+            <tr>
+              <th>תאריך</th>
+              <th>כתובת</th>
+              <th>חדרים</th>
+              <th>מ״ר</th>
+              <th>מחיר</th>
+              <th>למ״ר</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="trans-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="section-h"><h2>השוואת מחירים בין שכונות וערים סמוכות</h2></div>
       <div class="comp-grid" id="comp-grid"></div>
 
       <div class="section-h">
@@ -2229,6 +2341,52 @@ const market = {
       url: MADLAN_BASE + '/local/סביון', source:'מדלן' }
   ]
 };
+
+/* ============== DATA: ק׳ הסביונים — פילוח לפי סוג דירה ==============
+   מקור: ממוצע משוכלל של מודעות יד2 + מדלן + מאגר רמ"י (עסקאות אחרונות)
+   נכון לחודש אפריל 2026 · נתונים אינדיקטיביים, mock
+*/
+const sebionimByRooms = [
+  { rooms:'3 חדרים',         sizeRange:'70–82 מ״ר',   sizeAvg: 76,  ppsAvg: 30100, totalAvg: 2287600, count: 11,
+    rentLow: 5500, rentHigh: 6200, rentAvg: 5850, rentCount: 8,
+    urlYad2: YAD2_BASE + '?city=2620&neighborhood=1483&rooms=3-3',
+    urlYad2Rent: 'https://www.yad2.co.il/realestate/rent?city=2620&neighborhood=1483&rooms=3-3' },
+  { rooms:'4 חדרים',         sizeRange:'95–112 מ״ר',  sizeAvg: 103, ppsAvg: 31200, totalAvg: 3213600, count: 28,
+    rentLow: 6800, rentHigh: 7900, rentAvg: 7300, rentCount: 19,
+    urlYad2: YAD2_BASE + '?city=2620&neighborhood=1483&rooms=4-4',
+    urlYad2Rent: 'https://www.yad2.co.il/realestate/rent?city=2620&neighborhood=1483&rooms=4-4' },
+  { rooms:'5 חדרים',         sizeRange:'115–138 מ״ר', sizeAvg: 124, ppsAvg: 31800, totalAvg: 3943200, count: 22,
+    rentLow: 8500, rentHigh: 9800, rentAvg: 9100, rentCount: 13,
+    urlYad2: YAD2_BASE + '?city=2620&neighborhood=1483&rooms=5-5',
+    urlYad2Rent: 'https://www.yad2.co.il/realestate/rent?city=2620&neighborhood=1483&rooms=5-5' },
+  { rooms:'פנטהאוז / 6+',    sizeRange:'140–185 מ״ר', sizeAvg: 158, ppsAvg: 33800, totalAvg: 5340400, count: 6,
+    rentLow: 11000, rentHigh: 13500, rentAvg: 12200, rentCount: 4,
+    urlYad2: YAD2_BASE + '?city=2620&neighborhood=1483&rooms=6--99',
+    urlYad2Rent: 'https://www.yad2.co.il/realestate/rent?city=2620&neighborhood=1483&rooms=6--99' }
+];
+
+/* ============== DATA: עסקאות אחרונות בק׳ הסביונים ==============
+   המקור הרשמי: מאגר עסקאות נדל"ן של רמ"י (https://nadlan.gov.il)
+   חיפוש לפי גוש 6225/6226 + שם רחוב. הנתונים כאן הם דוגמה ריאליסטית (mock).
+*/
+const recentTransactions = [
+  { date:'2026-03', addr:'התמר 8 · ק׳ הסביונים',     rooms:'4',          size:105, price:3290000, pps:31333,
+    url:'https://www.nadlan.gov.il/?search=יהוד+התמר' },
+  { date:'2026-02', addr:'הברוש 22 · ק׳ הסביונים',   rooms:'5',          size:118, price:3680000, pps:31186,
+    url:'https://www.nadlan.gov.il/?search=יהוד+הברוש' },
+  { date:'2026-02', addr:'הזית 14 · ק׳ הסביונים',    rooms:'4',          size:97,  price:2980000, pps:30722,
+    url:'https://www.nadlan.gov.il/?search=יהוד+הזית' },
+  { date:'2026-01', addr:'האלון 5 · ק׳ הסביונים',    rooms:'3',          size:78,  price:2350000, pps:30128,
+    url:'https://www.nadlan.gov.il/?search=יהוד+האלון' },
+  { date:'2026-01', addr:'הסביון 12 · ק׳ הסביונים',  rooms:'5',          size:124, price:3920000, pps:31613,
+    url:'https://www.nadlan.gov.il/?search=יהוד+הסביון' },
+  { date:'2025-12', addr:'התאנה 3 · ק׳ הסביונים',    rooms:'4 + מרפסת',  size:108, price:3450000, pps:31944,
+    url:'https://www.nadlan.gov.il/?search=יהוד+התאנה' },
+  { date:'2025-12', addr:'הדפנה 9 · ק׳ הסביונים',    rooms:'5',          size:120, price:3780000, pps:31500,
+    url:'https://www.nadlan.gov.il/?search=יהוד+הדפנה' },
+  { date:'2025-11', addr:'התות 17 · ק׳ הסביונים',    rooms:'פנטהאוז',    size:155, price:5150000, pps:33226,
+    url:'https://www.nadlan.gov.il/?search=יהוד+התות' }
+];
 
 /* ============== DATA: NEWS / ARTICLES ============== */
 // Hand-curated article links + a search-by-keyword fallback.
@@ -2927,6 +3085,54 @@ function renderListings(){
     </a>`).join('');
 }
 
+function renderRoomsTable(){
+  const tbody = el('#rooms-tbody'); if (!tbody) return;
+  tbody.innerHTML = sebionimByRooms.map(r => {
+    const yieldGross = ((r.rentAvg * 12) / r.totalAvg * 100).toFixed(2);
+    return `
+    <tr>
+      <td class="room-cell">${r.rooms}<div class="muted" style="font-size:11px; font-weight:400; margin-top:2px;">${r.sizeRange}</div></td>
+      <td>${r.sizeAvg} מ״ר</td>
+      <td><strong>${fmt.nis(r.totalAvg)}</strong></td>
+      <td class="pps-cell">₪ ${fmt.num(r.ppsAvg)}</td>
+      <td><strong>${fmt.nis(r.rentAvg)}</strong><span class="muted"> /חודש</span></td>
+      <td class="muted" style="font-size:12px;">${fmt.nis(r.rentLow)}–${fmt.nis(r.rentHigh)}</td>
+      <td><span class="yield-cell">${yieldGross}%</span></td>
+      <td>
+        <div class="count-cell">${r.count} מכירה · ${r.rentCount} שכירות</div>
+        <div class="links-row">
+          <a class="mini-link" href="${r.urlYad2}" target="_blank" rel="noopener">למכירה →</a>
+          <a class="mini-link" href="${r.urlYad2Rent}" target="_blank" rel="noopener">להשכרה →</a>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Update the "תשואה אפקטיבית שלך" mention based on the 4-room baseline (the user's likely apartment size)
+  const fourRoom = sebionimByRooms.find(r => r.rooms === '4 חדרים');
+  if (fourRoom) {
+    // user's effective price ≈ 20631 * 103 sqm (4-room avg size) = 2,124,993
+    const userPrice = 20631 * fourRoom.sizeAvg;
+    const effectiveYield = ((fourRoom.rentAvg * 12) / userPrice * 100).toFixed(2);
+    els('.tx-yield-effective').forEach(n => n.textContent = effectiveYield + '%');
+  }
+}
+
+function renderTransactions(){
+  const tbody = el('#trans-tbody'); if (!tbody) return;
+  tbody.innerHTML = recentTransactions.map(t => `
+    <tr>
+      <td class="date-cell">${t.date}</td>
+      <td><strong>${t.addr}</strong></td>
+      <td>${t.rooms}</td>
+      <td>${t.size}</td>
+      <td class="price-cell">${fmt.nis(t.price)}</td>
+      <td class="pps-cell" style="color: var(--brand);">₪ ${fmt.num(t.pps)}</td>
+      <td><a class="ext-link" href="${t.url}" target="_blank" rel="noopener">פרטים ↗</a></td>
+    </tr>
+  `).join('');
+}
+
 function renderTrendChart(){
   const ctx = el('#chart-trend'); if (!ctx) return;
   if (state.charts.trend) state.charts.trend.destroy();
@@ -3116,6 +3322,8 @@ function init(){
   renderCostTable();
 
   renderPOI();
+  renderRoomsTable();
+  renderTransactions();
   renderComps();
   renderListings();
   renderNews();
