@@ -1,0 +1,18 @@
+# Personal files — DO NOT push to GitHub
+dira-uploads/
+*.rtf
+Screenshot*.png
+Screenshot*.jpeg
+Screenshot*.jpg
+
+# OS / editor noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Local dev
+node_modules/
+.env
+.env.local

@@ -1,0 +1,3137 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B1B33">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dira">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%230B1B33'/><text x='90' y='118' font-family='-apple-system,Heebo,Arial' font-size='100' font-weight='800' text-anchor='middle' fill='%23B08A4F'>D</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230B1B33'/><text x='32' y='44' font-family='Arial' font-size='38' font-weight='800' text-anchor='middle' fill='%23B08A4F'>D</text></svg>">
+<title>Dira · מרכז שליטה — יהוד-מונוסון</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<style>
+/* =========================================================
+   DESIGN SYSTEM — Dira
+   Premium, calm, fintech × proptech
+   ========================================================= */
+:root{
+  /* Palette */
+  --bg:           #F4F5F8;
+  --bg-elev:      #FFFFFF;
+  --surface:      #FFFFFF;
+  --surface-2:   #FAFBFD;
+  --surface-3:   #F0F2F6;
+  --line:        #E4E7EE;
+  --line-strong: #CFD4DE;
+
+  --ink-1:       #0A1733;
+  --ink-2:       #3A4566;
+  --ink-3:       #6B7691;
+  --ink-4:       #9AA3B8;
+
+  --brand:        #0B1B33;
+  --brand-2:      #173A66;
+  --brand-soft:   #E8EEF7;
+  --accent:       #1F5FA8;
+  --accent-soft:  #E5EEF8;
+
+  --success:      #1F7A4D;
+  --success-soft: #E2F1E8;
+  --warning:      #B07208;
+  --warning-soft: #FBF1DC;
+  --critical:     #A8313A;
+  --critical-soft:#F8E3E5;
+  --gold:         #B08A4F;
+  --gold-soft:    #F4ECDB;
+
+  /* Type */
+  --font: 'Heebo', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Radius */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+
+  /* Shadow */
+  --shadow-1: 0 1px 2px rgba(10,23,51,.04), 0 1px 1px rgba(10,23,51,.03);
+  --shadow-2: 0 4px 12px rgba(10,23,51,.06), 0 1px 3px rgba(10,23,51,.04);
+  --shadow-3: 0 12px 28px rgba(10,23,51,.10), 0 4px 8px rgba(10,23,51,.04);
+
+  /* Spacing scale */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-7: 32px; --s-8: 40px; --s-9: 56px;
+}
+
+*,*::before,*::after{ box-sizing: border-box; }
+html,body{ margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink-1);
+  font-size: 15px;
+  line-height: 1.55;
+  font-feature-settings: "ss01" on, "kern" on;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button{ font-family: inherit; cursor:pointer; }
+a{ color: inherit; text-decoration: none; }
+input,select,textarea{ font-family: inherit; font-size: inherit; color: inherit; }
+img{ max-width:100%; display:block; }
+
+/* =========================================================
+   APP SHELL
+   ========================================================= */
+.app{
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 64px 1fr;
+  grid-template-areas:
+    "rail header"
+    "rail main";
+}
+
+/* Top bar */
+.topbar{
+  grid-area: header;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--line);
+  padding: 0 var(--s-6);
+  display:flex; align-items:center; justify-content:space-between;
+  position: sticky; top:0; z-index: 40;
+}
+.topbar-left{ display:flex; align-items:center; gap: var(--s-4); min-width:0; }
+.topbar-title{ font-weight:700; font-size: 16px; color: var(--ink-1); }
+.topbar-sub{ font-size: 12px; color: var(--ink-3); }
+.topbar-right{ display:flex; align-items:center; gap: var(--s-3); }
+
+.last-visit{
+  font-size: 12px; color: var(--ink-3);
+  background: var(--surface-3);
+  padding: 6px 10px; border-radius: 999px;
+  display:flex; align-items:center; gap:6px;
+}
+.last-visit::before{
+  content:""; width:6px; height:6px; border-radius:50%; background: var(--accent);
+}
+
+.icon-btn{
+  width:36px; height:36px; border-radius: 10px;
+  background: transparent; border: 1px solid var(--line);
+  display:inline-flex; align-items:center; justify-content:center;
+  color: var(--ink-2); transition: all .15s ease;
+}
+.icon-btn:hover{ background: var(--surface-3); color: var(--ink-1); }
+.icon-btn .badge{
+  position: absolute; transform: translate(60%, -60%);
+  background: var(--critical); color: #fff;
+  font-size: 10px; font-weight:700;
+  min-width: 16px; height:16px; padding: 0 4px;
+  border-radius: 999px; display:inline-flex; align-items:center; justify-content:center;
+  border: 2px solid var(--bg-elev);
+}
+
+/* Side rail (desktop) */
+.rail{
+  grid-area: rail;
+  background: var(--brand);
+  color: #DCE3F0;
+  padding: var(--s-5) var(--s-3);
+  display:flex; flex-direction: column; gap: var(--s-2);
+  position: sticky; top:0; height: 100vh;
+  overflow-y: auto;
+}
+.rail-brand{
+  display:flex; align-items:center; gap: 10px;
+  padding: var(--s-2) var(--s-3) var(--s-5);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: var(--s-3);
+}
+.rail-logo{
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, #B08A4F 0%, #D6B17B 100%);
+  color: #0B1B33; font-weight: 800;
+  display:flex; align-items:center; justify-content:center;
+  font-size: 16px;
+}
+.rail-name{ color:#fff; font-weight:700; font-size: 15px; }
+.rail-tag{ color:#9DAAC4; font-size: 11px; }
+
+.rail-nav{ display:flex; flex-direction: column; gap: 2px; }
+.rail-link{
+  display:flex; align-items:center; gap: var(--s-3);
+  padding: 10px 12px; border-radius: 10px;
+  color:#B7C2D6; font-size: 14px; font-weight: 500;
+  border: 1px solid transparent;
+  transition: all .15s ease;
+}
+.rail-link:hover{ background: rgba(255,255,255,.04); color:#fff; }
+.rail-link.active{
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  border-color: rgba(255,255,255,.06);
+  box-shadow: inset 3px 0 0 var(--gold);
+  box-shadow: inset -3px 0 0 var(--gold); /* RTL: right-edge accent */
+}
+.rail-link .ico{ width:18px; height:18px; opacity: .9; }
+.rail-link .lab{ flex:1; }
+.rail-link .ct{
+  font-size: 11px; background: rgba(255,255,255,.08);
+  padding: 2px 8px; border-radius: 999px; color: #DCE3F0;
+}
+.rail-foot{
+  margin-top: auto;
+  padding: var(--s-3);
+  font-size: 11px; color:#9DAAC4;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+/* Main */
+.main{
+  grid-area: main;
+  padding: var(--s-6);
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+.screen{ display:none; }
+.screen.active{ display:block; animation: fade .25s ease; }
+@keyframes fade{ from{ opacity:0; transform: translateY(4px); } to{ opacity:1; transform:none; } }
+
+/* =========================================================
+   ATOMS
+   ========================================================= */
+h1.h{ font-size: 22px; font-weight: 700; margin: 0 0 4px; letter-spacing: -.01em; }
+.sub{ color: var(--ink-3); font-size: 13px; margin-bottom: var(--s-6); }
+
+.section-h{
+  display:flex; align-items: baseline; justify-content: space-between;
+  margin: var(--s-7) 0 var(--s-3);
+}
+.section-h h2{
+  font-size: 15px; font-weight: 700; margin:0; color: var(--ink-1);
+  letter-spacing: -.005em;
+}
+.section-h .meta{ font-size: 12px; color: var(--ink-3); }
+
+.card{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s-5);
+  box-shadow: var(--shadow-1);
+}
+.card.tight{ padding: var(--s-4); }
+
+.kpi{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s-5);
+  position: relative;
+  overflow: hidden;
+}
+.kpi-label{ color: var(--ink-3); font-size: 12px; font-weight:500; }
+.kpi-value{ font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin: 6px 0 4px; color: var(--ink-1);
+  font-feature-settings: "tnum" on, "lnum" on;
+}
+.kpi-sub{ font-size: 12px; color: var(--ink-3); }
+.kpi-deco{
+  position: absolute; left: -20px; bottom: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--brand-soft); opacity: .55;
+}
+
+.pill{
+  display:inline-flex; align-items:center; gap:6px;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  background: var(--surface-3); color: var(--ink-2);
+  border: 1px solid var(--line);
+}
+.pill.success{ background: var(--success-soft); color: var(--success); border-color: transparent; }
+.pill.warning{ background: var(--warning-soft); color: var(--warning); border-color: transparent; }
+.pill.critical{ background: var(--critical-soft); color: var(--critical); border-color: transparent; }
+.pill.brand{ background: var(--brand-soft); color: var(--brand-2); border-color: transparent; }
+.pill.gold{ background: var(--gold-soft); color: var(--gold); border-color: transparent; }
+.pill.dot::before{ content:""; width:6px; height:6px; border-radius:50%; background: currentColor; }
+
+.btn{
+  display:inline-flex; align-items:center; gap: 8px;
+  padding: 9px 14px; border-radius: 10px;
+  font-weight: 600; font-size: 13px;
+  border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink-1); transition: all .15s ease;
+}
+.btn:hover{ background: var(--surface-3); }
+.btn.primary{ background: var(--brand); color: #fff; border-color: var(--brand); }
+.btn.primary:hover{ background: var(--brand-2); }
+.btn.ghost{ background: transparent; border-color: transparent; color: var(--ink-2); }
+.btn.ghost:hover{ background: var(--surface-3); color: var(--ink-1); }
+.btn.danger{ color: var(--critical); border-color: var(--critical-soft); }
+
+/* Grid helpers */
+.grid{ display:grid; gap: var(--s-4); }
+.grid.c2{ grid-template-columns: repeat(2,minmax(0,1fr)); }
+.grid.c3{ grid-template-columns: repeat(3,minmax(0,1fr)); }
+.grid.c4{ grid-template-columns: repeat(4,minmax(0,1fr)); }
+.grid.c2-1{ grid-template-columns: 2fr 1fr; }
+.grid.c1-2{ grid-template-columns: 1fr 2fr; }
+
+/* =========================================================
+   DASHBOARD-SPECIFIC
+   ========================================================= */
+.hero{
+  background: linear-gradient(135deg, #0B1B33 0%, #173A66 60%, #2A4F86 100%);
+  color: #fff;
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-2);
+}
+.hero::before{
+  content:""; position:absolute; left:-80px; top:-80px;
+  width: 280px; height:280px; border-radius:50%;
+  background: radial-gradient(circle, rgba(176,138,79,.35) 0%, transparent 70%);
+}
+.hero::after{
+  content:""; position:absolute; right:-60px; bottom:-100px;
+  width: 320px; height:320px; border-radius:50%;
+  background: radial-gradient(circle, rgba(31,95,168,.45) 0%, transparent 70%);
+}
+.hero > *{ position: relative; z-index:1; }
+.hero-eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size: 12px; font-weight: 600;
+  background: rgba(255,255,255,.10);
+  padding: 6px 12px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.15);
+}
+.hero-eyebrow .dot{ width:8px; height:8px; border-radius: 50%; background: #2DD4BF; box-shadow: 0 0 0 4px rgba(45,212,191,.25); }
+.hero-title{ font-size: 28px; font-weight: 800; margin: var(--s-3) 0 6px; letter-spacing:-.02em; }
+.hero-sub{ color: rgba(255,255,255,.78); font-size: 14px; max-width: 64ch; }
+.hero-row{
+  display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+.hero-stat{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  padding: var(--s-4); border-radius: var(--r-md);
+  backdrop-filter: blur(6px);
+}
+.hero-stat .lab{ font-size: 11px; color: rgba(255,255,255,.7); font-weight: 500; }
+.hero-stat .val{ font-size: 20px; font-weight: 700; margin-top: 4px; font-feature-settings: "tnum" on; }
+.hero-stat .delta{ font-size: 11px; color: #6EE7B7; margin-top: 2px; }
+.hero-stat .delta.warn{ color: #FCD34D; }
+
+/* Next action card */
+.next-action{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s-5);
+  display:flex; align-items: center; gap: var(--s-4);
+  border-right: 4px solid var(--accent); /* RTL */
+}
+.next-action.warn{ border-right-color: var(--warning); }
+.next-action.crit{ border-right-color: var(--critical); }
+.na-icon{
+  width:44px; height:44px; border-radius: 12px;
+  background: var(--accent-soft); color: var(--accent);
+  display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+}
+.na-body{ flex:1; min-width:0; }
+.na-title{ font-weight: 700; font-size: 15px; }
+.na-desc{ color: var(--ink-3); font-size: 13px; margin-top: 2px; }
+.na-meta{ display:flex; gap: var(--s-3); font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+
+/* Timeline strip */
+.timeline{
+  display:grid; grid-template-columns: repeat(6, 1fr);
+  gap: var(--s-3);
+  position: relative;
+}
+.tl-step{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: var(--s-3) var(--s-4);
+  position: relative;
+}
+.tl-step .ph{ font-size: 11px; color: var(--ink-3); }
+.tl-step .nm{ font-size: 13px; font-weight: 600; margin-top: 2px; }
+.tl-step .dt{ font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+.tl-step.done{ background: var(--success-soft); border-color: transparent; }
+.tl-step.done .nm{ color: var(--success); }
+.tl-step.now{ background: var(--brand); color: #fff; border-color: var(--brand); }
+.tl-step.now .ph,.tl-step.now .dt{ color: rgba(255,255,255,.7); }
+.tl-step.future{ opacity: .85; }
+
+/* Alerts list */
+.alerts{ display:flex; flex-direction: column; gap: var(--s-3); }
+.alert{
+  display:flex; gap: var(--s-3); align-items: flex-start;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.alert .ai{
+  width:36px; height:36px; border-radius: 10px;
+  display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+}
+.alert .ai.warn{ background: var(--warning-soft); color: var(--warning); }
+.alert .ai.crit{ background: var(--critical-soft); color: var(--critical); }
+.alert .ai.info{ background: var(--accent-soft); color: var(--accent); }
+.alert .ai.ok{ background: var(--success-soft); color: var(--success); }
+.alert h4{ margin: 0 0 4px; font-size: 14px; font-weight: 700; }
+.alert p{ margin:0; color: var(--ink-3); font-size: 13px; }
+.alert .at{ font-size: 11px; color: var(--ink-4); margin-top: 6px; }
+
+/* Risk meter */
+.risk{
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: var(--s-5);
+}
+.risk-bar{
+  height: 8px; border-radius: 999px; background: var(--surface-3);
+  overflow:hidden; margin: var(--s-3) 0 var(--s-2);
+}
+.risk-bar > div{
+  height: 100%;
+  background: linear-gradient(90deg, var(--success), var(--warning) 60%, var(--critical));
+  border-radius: 999px;
+}
+.risk-legend{ display:flex; justify-content: space-between; font-size: 11px; color: var(--ink-4); }
+
+/* Changelog (what changed) */
+.changelog{ display:flex; flex-direction:column; gap: var(--s-2); }
+.change-row{
+  display:flex; align-items: center; gap: var(--s-3);
+  padding: 10px var(--s-3);
+  border-bottom: 1px dashed var(--line);
+  font-size: 13px;
+}
+.change-row:last-child{ border-bottom: 0; }
+.change-row .when{ font-size: 11px; color: var(--ink-4); margin-right: auto; }
+.change-row .ic{
+  width:24px; height:24px; border-radius: 8px;
+  background: var(--surface-3); color: var(--ink-2);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 12px;
+}
+.change-row .ic.up{ background: var(--success-soft); color: var(--success); }
+.change-row .ic.down{ background: var(--critical-soft); color: var(--critical); }
+.change-row .ic.flag{ background: var(--warning-soft); color: var(--warning); }
+
+/* =========================================================
+   TASKS
+   ========================================================= */
+.tabs{
+  display:flex; gap: 4px; flex-wrap: wrap;
+  background: var(--surface-3);
+  padding: 4px; border-radius: 12px;
+  border: 1px solid var(--line);
+  margin-bottom: var(--s-4);
+}
+.tab{
+  padding: 8px 14px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; color: var(--ink-2);
+  background: transparent; border: 0;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.tab:hover{ color: var(--ink-1); }
+.tab.active{ background: var(--surface); color: var(--ink-1); box-shadow: var(--shadow-1); }
+.tab .ct{
+  font-size: 11px; background: var(--surface-3); padding: 2px 7px; border-radius: 999px;
+  color: var(--ink-3);
+}
+.tab.active .ct{ background: var(--brand-soft); color: var(--brand-2); }
+
+.task-list{ display:flex; flex-direction: column; gap: var(--s-3); }
+.task{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s-4);
+  padding-right: var(--s-5);            /* extra space for the urg bar on the RIGHT (RTL) */
+  display:grid;
+  grid-template-columns: auto 1fr auto;       /* checkbox | body | actions (urg is absolute) */
+  gap: var(--s-3);
+  align-items: flex-start;
+  position: relative;
+  text-align: right;                    /* enforce RTL alignment for body content */
+  direction: rtl;
+}
+.task[data-state="done"]{ background: var(--surface-2); }
+.task[data-state="done"] .t-title{ text-decoration: line-through; color: var(--ink-3); }
+.task .checkbox{
+  width: 22px; height:22px; border-radius: 7px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface);
+  cursor: pointer;
+  display:flex; align-items:center; justify-content:center;
+  flex: 0 0 auto;
+  margin-top: 2px;
+  transition: all .15s ease;
+}
+.task .checkbox:hover{ border-color: var(--accent); }
+.task[data-state="done"] .checkbox{
+  background: var(--success); border-color: var(--success); color: #fff;
+}
+.task .body{
+  min-width:0;
+  text-align: right;
+  unicode-bidi: plaintext;             /* lets each line auto-detect direction */
+}
+.t-title{
+  font-weight: 600; font-size: 14px;
+  text-align: right;
+  display: flex; align-items: center; gap: 6px;
+  flex-direction: row-reverse;          /* badge appears at the RIGHT (start of RTL line) */
+  justify-content: flex-end;
+}
+.t-desc{
+  color: var(--ink-3); font-size: 13px; margin-top: 6px;
+  text-align: right;
+  line-height: 1.55;
+}
+.t-meta{
+  display:flex; flex-wrap: wrap; gap: var(--s-2);
+  margin-top: 10px;
+  justify-content: flex-start;          /* in RTL, flex-start = right edge */
+}
+.t-meta .pill{ font-size: 11px; padding: 3px 8px; }
+.t-conseq{
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--warning-soft);
+  border-right: 3px solid var(--warning);
+  border-radius: var(--r-xs);
+  font-size: 12px; color: var(--warning);
+  text-align: right;
+}
+.task .actions{ display:flex; gap: 6px; flex: 0 0 auto; align-self: flex-start; }
+.task .urg{
+  width: 4px; align-self: stretch; border-radius: 3px;
+  background: var(--ink-4);
+  position: absolute;
+  top: var(--s-4); bottom: var(--s-4);
+  right: 6px;                            /* attach urgency stripe to the RIGHT edge in RTL */
+}
+.task[data-urg="high"] .urg{ background: var(--critical); }
+.task[data-urg="med"] .urg{ background: var(--warning); }
+.task[data-urg="low"] .urg{ background: var(--ink-4); }
+
+/* Progress */
+.prog{
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: var(--s-5);
+}
+.prog-row{ display:flex; justify-content: space-between; font-size: 13px; }
+.prog-bar{ height: 8px; background: var(--surface-3); border-radius: 999px; margin: 8px 0; overflow: hidden; }
+.prog-bar > div{ height:100%; background: var(--accent); border-radius: 999px; }
+
+/* =========================================================
+   FINANCIAL
+   ========================================================= */
+.benefit-card{
+  background: linear-gradient(135deg, #1F7A4D 0%, #0E5535 100%);
+  color: #fff;
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+  position: relative;
+  overflow: hidden;
+}
+.benefit-card::before{
+  content:""; position:absolute; right:-60px; top:-60px;
+  width: 200px; height:200px; border-radius:50%;
+  background: rgba(255,255,255,.06);
+}
+.benefit-card .label{ font-size: 13px; color: rgba(255,255,255,.85); }
+.benefit-card .big{ font-size: 36px; font-weight: 800; margin: 6px 0 2px; letter-spacing: -.02em; font-feature-settings: "tnum" on; }
+.benefit-card .pct{ font-size: 14px; color: #BBE7CF; }
+.benefit-card .desc{ margin-top: var(--s-4); font-size: 13px; color: rgba(255,255,255,.85); max-width: 50ch; }
+
+.scenario-tabs{ display:flex; gap:6px; margin-bottom: var(--s-4); }
+.scenario-tab{
+  padding: 8px 14px; font-size: 13px; font-weight: 600;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--ink-2);
+}
+.scenario-tab.active{ background: var(--brand); color: #fff; border-color: var(--brand); }
+
+.cost-table{ width: 100%; border-collapse: collapse; }
+.cost-table th, .cost-table td{
+  text-align: right; padding: 10px var(--s-3);
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.cost-table th{ font-weight: 600; color: var(--ink-3); font-size: 12px; }
+.cost-table .num{ font-feature-settings: "tnum" on; font-weight: 600; }
+.cost-table tr.total{ background: var(--surface-3); }
+.cost-table tr.total td{ font-weight: 700; }
+
+.range{
+  width: 100%; appearance: none; background: transparent; height: 24px;
+}
+.range::-webkit-slider-runnable-track{ height: 6px; background: var(--surface-3); border-radius: 999px; }
+.range::-webkit-slider-thumb{
+  appearance: none; width:18px; height: 18px; border-radius: 50%;
+  background: var(--accent); margin-top: -6px;
+  border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  cursor: pointer;
+}
+
+.insight{
+  background: var(--brand-soft);
+  border-right: 3px solid var(--brand-2);
+  padding: var(--s-4);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  color: var(--brand-2);
+  display:flex; gap: var(--s-3); align-items: flex-start;
+}
+.insight .ico{
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--brand-2); color: #fff;
+  display:flex; align-items:center; justify-content: center;
+  flex:0 0 auto; font-weight: 800;
+}
+.insight strong{ color: var(--brand); }
+
+/* =========================================================
+   AREA
+   ========================================================= */
+.map-mock{
+  height: 280px; border-radius: var(--r-md);
+  background:
+    radial-gradient(circle at 70% 40%, rgba(31,95,168,.18) 0%, transparent 40%),
+    radial-gradient(circle at 35% 70%, rgba(31,122,77,.12) 0%, transparent 40%),
+    linear-gradient(135deg, #EAF1F8 0%, #F4F8FC 100%);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.map-pin{
+  position: absolute;
+  display:flex; flex-direction:column; align-items:center;
+  transform: translate(50%, -100%);
+}
+.map-pin .dot{
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--brand); border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+.map-pin .lab{
+  margin-top: 6px;
+  background: #fff; padding: 4px 8px;
+  border-radius: 6px; font-size: 11px; font-weight: 600;
+  box-shadow: var(--shadow-1); white-space: nowrap;
+}
+.map-pin.you .dot{ background: var(--gold); width: 18px; height: 18px; }
+.map-pin.you::before{
+  content:""; position:absolute; top: -2px; right: -2px;
+  width: 18px; height:18px; border-radius:50%;
+  background: var(--gold); opacity:.35;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse{
+  0%{ transform: scale(1); opacity:.35; }
+  100%{ transform: scale(2.5); opacity: 0; }
+}
+
+.poi-list{ display:flex; flex-direction: column; }
+.poi{
+  display:flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+.poi:last-child{ border-bottom: 0; }
+.poi-ic{
+  width:36px; height:36px; border-radius: 10px;
+  background: var(--surface-3); color: var(--ink-2);
+  display:flex; align-items:center; justify-content: center;
+  font-size: 16px; flex: 0 0 auto;
+}
+.poi-ic.school{ background: #FEF3C7; color:#92400E; }
+.poi-ic.gan{ background: #DCFCE7; color:#166534; }
+.poi-ic.health{ background: #FEE2E2; color:#991B1B; }
+.poi-ic.transit{ background: #DBEAFE; color:#1E40AF; }
+.poi-ic.shop{ background: #F3E8FF; color:#6B21A8; }
+.poi-ic.park{ background: #D1FAE5; color:#065F46; }
+.poi-name{ font-weight: 600; font-size: 14px; }
+.poi-sub{ font-size: 12px; color: var(--ink-3); }
+.poi-dist{ font-size: 12px; color: var(--ink-2); font-weight: 600; margin-right: auto; font-feature-settings: "tnum" on; }
+.poi-rate{ font-size: 11px; color: var(--ink-3); }
+
+/* Score donut */
+.donut{
+  width: 140px; height: 140px;
+  position: relative;
+  margin: 0 auto;
+}
+.donut svg{ transform: rotate(-90deg); }
+.donut .lbl{
+  position: absolute; inset: 0;
+  display:flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.donut .num{ font-size: 32px; font-weight: 800; letter-spacing: -.02em; font-feature-settings: "tnum" on; }
+.donut .of{ font-size: 11px; color: var(--ink-3); margin-top: -4px; }
+
+/* =========================================================
+   MARKET
+   ========================================================= */
+.comp-grid{
+  display:grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-3);
+}
+.comp{
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: var(--s-4);
+  display:flex; flex-direction: column; gap: 6px;
+}
+.comp .city{ font-weight: 700; font-size: 14px; }
+.comp .pps{ font-size: 20px; font-weight: 700; font-feature-settings: "tnum" on; letter-spacing: -.01em; }
+.comp .delta{ font-size: 12px; }
+.comp .delta.up{ color: var(--success); }
+.comp .delta.dn{ color: var(--critical); }
+.comp .bar{ height: 4px; background: var(--surface-3); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+.comp .bar > div{ height:100%; background: var(--accent); }
+
+.listing{
+  display:flex; gap: var(--s-3); padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line); font-size: 13px;
+  align-items: center;
+}
+.listing:last-child{ border-bottom: 0; }
+.listing .thumb{
+  width: 64px; height: 48px; border-radius: 8px;
+  background: linear-gradient(135deg, #DDE6F0, #C7D5E5);
+  flex: 0 0 auto;
+  display:flex; align-items:center; justify-content:center;
+  color: var(--ink-3); font-size: 18px;
+}
+.listing .body{ flex:1; min-width: 0; }
+.listing .addr{ font-weight: 600; }
+.listing .specs{ font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.listing .price{ font-weight: 700; font-feature-settings: "tnum" on; }
+.listing .pps{ font-size: 11px; color: var(--ink-3); text-align: left; }
+
+/* =========================================================
+   DOCUMENTS
+   ========================================================= */
+.doc-row{
+  display:flex; align-items: center; gap: var(--s-3);
+  padding: 12px var(--s-3);
+  border-bottom: 1px solid var(--line);
+}
+.doc-row:last-child{ border-bottom: 0; }
+.doc-ic{
+  width: 40px; height: 48px; border-radius: 6px;
+  background: var(--surface-3); border: 1px solid var(--line);
+  display:flex; align-items:center; justify-content: center;
+  color: var(--ink-2); font-size: 11px; font-weight: 700;
+  position: relative; flex: 0 0 auto;
+}
+.doc-ic.pdf{ background: #FEE2E2; color: #991B1B; }
+.doc-ic.contract{ background: #FEF3C7; color: #92400E; }
+.doc-ic.note{ background: #DBEAFE; color: #1E40AF; }
+.doc-name{ font-weight: 600; font-size: 14px; }
+.doc-meta{ font-size: 12px; color: var(--ink-3); }
+
+.contact-card{
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: var(--s-4);
+  display:flex; align-items: center; gap: var(--s-3);
+}
+.avatar{
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #173A66, #0B1B33);
+  color: #fff; font-weight: 700;
+  display:flex; align-items:center; justify-content: center;
+  flex: 0 0 auto;
+}
+
+/* =========================================================
+   SCORES
+   ========================================================= */
+.score-card{
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: var(--s-5);
+  display:grid; grid-template-columns: 140px 1fr; gap: var(--s-5);
+  align-items: center;
+}
+.score-body h3{ margin:0; font-size: 16px; font-weight: 700; }
+.score-body .desc{ color: var(--ink-3); font-size: 13px; margin-top: 4px; }
+.score-bd{
+  display:grid; grid-template-columns: 1fr 1fr; gap: var(--s-3);
+  margin-top: var(--s-3);
+  font-size: 12px;
+}
+.score-bd .col{
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: var(--r-sm); padding: 10px;
+}
+.score-bd .col.up h5{ color: var(--success); }
+.score-bd .col.dn h5{ color: var(--critical); }
+.score-bd h5{ margin: 0 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+.score-bd ul{ margin: 0; padding-right: 16px; color: var(--ink-2); }
+.score-bd li{ margin-bottom: 2px; }
+
+/* =========================================================
+   MOBILE — bottom tabs, stacked
+   ========================================================= */
+.mobile-tabs{ display:none; }
+
+@media (max-width: 960px){
+  .app{
+    grid-template-columns: 1fr;
+    grid-template-rows: 56px 1fr 60px;
+    grid-template-areas:
+      "header"
+      "main"
+      "tabs";
+  }
+  .rail{ display:none; }
+  .main{ padding: var(--s-4) var(--s-4) calc(var(--s-9) + var(--s-4)); }
+  .topbar{ padding: 0 var(--s-4); height: 56px; }
+  .topbar-sub{ display:none; }
+
+  .hero{ padding: var(--s-5); border-radius: var(--r-md); }
+  .hero-title{ font-size: 22px; }
+  .hero-row{ grid-template-columns: repeat(2, 1fr); gap: var(--s-3); }
+  .hero-stat .val{ font-size: 16px; }
+
+  .timeline{ grid-template-columns: 1fr 1fr; }
+  .grid.c2,.grid.c3,.grid.c4,.grid.c2-1,.grid.c1-2{ grid-template-columns: 1fr; }
+  .comp-grid{ grid-template-columns: 1fr 1fr; }
+  .score-card{ grid-template-columns: 1fr; text-align: center; }
+  .score-bd{ text-align: right; }
+
+  .mobile-tabs{
+    display:flex;
+    grid-area: tabs;
+    background: var(--bg-elev);
+    border-top: 1px solid var(--line);
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+    justify-content: space-around;
+  }
+  .mt-link{
+    flex: 1;
+    background: transparent; border: 0;
+    padding: 6px 4px; border-radius: 8px;
+    display:flex; flex-direction: column; align-items: center; gap: 2px;
+    color: var(--ink-3); font-size: 10px; font-weight: 600;
+  }
+  .mt-link.active{ color: var(--brand); }
+  .mt-link .ico{ font-size: 18px; }
+
+  .task{ grid-template-columns: auto 1fr; }
+  .task .actions{ grid-column: 1 / -1; justify-content: flex-end; }
+}
+
+/* =========================================================
+   UTILITIES
+   ========================================================= */
+.muted{ color: var(--ink-3); }
+.row{ display:flex; align-items: center; gap: var(--s-3); }
+.row.between{ justify-content: space-between; }
+.spacer{ flex:1; }
+.h-divider{ height: 1px; background: var(--line); margin: var(--s-4) 0; }
+.tabular{ font-feature-settings: "tnum" on, "lnum" on; }
+.text-success{ color: var(--success); }
+.text-critical{ color: var(--critical); }
+.text-warning{ color: var(--warning); }
+.hidden{ display:none !important; }
+
+/* Tiny chart container */
+.chart-wrap{ position: relative; height: 220px; }
+.chart-wrap.tall{ height: 280px; }
+.chart-wrap.short{ height: 140px; }
+
+/* =========================================================
+   SOURCE / TOOLTIP / MODAL
+   ========================================================= */
+.src-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width: 18px; height:18px; border-radius:50%;
+  background: var(--surface-3); color: var(--ink-3);
+  border: 1px solid var(--line);
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  margin-right: 6px; vertical-align: middle;
+  transition: all .15s ease;
+}
+.src-btn:hover{ background: var(--brand-soft); color: var(--brand-2); border-color: transparent; }
+.src-btn.official{ background: var(--success-soft); color: var(--success); border-color: transparent; }
+.src-btn.industry{ background: var(--brand-soft); color: var(--brand-2); border-color: transparent; }
+.src-btn.recommended{ background: var(--warning-soft); color: var(--warning); border-color: transparent; }
+
+.modal-backdrop{
+  position: fixed; inset: 0; background: rgba(10,23,51,.45);
+  display: none; align-items: center; justify-content: center;
+  z-index: 100; padding: var(--s-4);
+}
+.modal-backdrop.open{ display: flex; animation: fade .15s ease; }
+.modal{
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  max-width: 520px; width: 100%;
+  max-height: 86vh; overflow: auto;
+  box-shadow: var(--shadow-3);
+  animation: pop .18s ease;
+}
+@keyframes pop{ from{ transform: scale(.96); opacity: 0; } to{ transform: scale(1); opacity: 1; } }
+.modal-head{
+  padding: var(--s-5) var(--s-5) var(--s-3);
+  display:flex; align-items: flex-start; gap: var(--s-3);
+  border-bottom: 1px solid var(--line);
+}
+.modal-head h3{ margin: 0; font-size: 16px; font-weight: 700; flex: 1; }
+.modal-close{
+  background: transparent; border: 0; font-size: 22px; line-height: 1;
+  color: var(--ink-3); cursor: pointer;
+}
+.modal-body{ padding: var(--s-5); font-size: 14px; color: var(--ink-2); line-height: 1.65; }
+.modal-body p{ margin: 0 0 var(--s-3); }
+.modal-body a{
+  color: var(--accent); border-bottom: 1px solid var(--accent-soft);
+}
+.modal-body a:hover{ border-bottom-color: var(--accent); }
+.modal-foot{
+  padding: var(--s-3) var(--s-5);
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+  font-size: 12px; color: var(--ink-3);
+  display:flex; justify-content: space-between; align-items: center; gap: var(--s-3);
+}
+
+/* Source confidence badge inside modal */
+.src-conf{
+  display:inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 999px;
+}
+.src-conf.official{ background: var(--success-soft); color: var(--success); }
+.src-conf.industry{ background: var(--brand-soft); color: var(--brand-2); }
+.src-conf.recommended{ background: var(--warning-soft); color: var(--warning); }
+
+/* =========================================================
+   NEWS / URBAN DEVELOPMENT
+   ========================================================= */
+.news-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-3); }
+.news-card{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s-4);
+  display:flex; flex-direction: column; gap: 8px;
+  text-decoration: none; color: var(--ink-1);
+  transition: all .15s ease;
+}
+.news-card:hover{ box-shadow: var(--shadow-2); border-color: var(--line-strong); transform: translateY(-1px); }
+.news-meta{
+  display:flex; align-items: center; gap: var(--s-3);
+  font-size: 11px; color: var(--ink-3);
+}
+.news-source{
+  background: var(--surface-3);
+  padding: 3px 8px; border-radius: 999px;
+  font-weight: 600; color: var(--ink-2);
+}
+.news-title{ font-size: 14px; font-weight: 700; line-height: 1.4; }
+.news-snippet{ font-size: 13px; color: var(--ink-3); line-height: 1.5; }
+.news-link{
+  font-size: 12px; color: var(--accent); margin-top: auto; padding-top: 6px;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+
+/* Urban development cards */
+.dev-card{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s-4);
+  display:grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: var(--s-3);
+  align-items: flex-start;
+}
+.dev-ic{
+  width: 48px; height: 48px; border-radius: 12px;
+  background: var(--brand-soft); color: var(--brand-2);
+  display:flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.dev-ic.transit{ background: #DBEAFE; color: #1E40AF; }
+.dev-ic.road{ background: #FEF3C7; color: #92400E; }
+.dev-ic.building{ background: #DCFCE7; color: #166534; }
+.dev-ic.commerce{ background: #F3E8FF; color: #6B21A8; }
+.dev-name{ font-weight: 700; font-size: 14px; }
+.dev-desc{ font-size: 13px; color: var(--ink-3); margin-top: 4px; line-height: 1.5; }
+.dev-impact{
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--brand-soft);
+  border-right: 3px solid var(--brand-2);
+  border-radius: 6px;
+  font-size: 12px; color: var(--brand-2);
+}
+.dev-impact strong{ color: var(--brand); }
+.dev-status{
+  display:flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  font-size: 11px; color: var(--ink-3);
+}
+.dev-link{
+  font-size: 12px; color: var(--accent); margin-top: 8px;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+
+/* =========================================================
+   UPLOADS
+   ========================================================= */
+.upload-zone{
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--r-md);
+  padding: var(--s-4);
+  text-align: center;
+  background: var(--surface-2);
+  transition: all .15s ease;
+  cursor: pointer;
+}
+.upload-zone:hover{
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.upload-zone .ic{
+  font-size: 22px; color: var(--accent);
+  margin-bottom: 6px;
+}
+.upload-zone .title{ font-weight: 600; font-size: 13px; }
+.upload-zone .sub{ font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+.upload-zone input[type="file"]{ display: none; }
+
+.attach{
+  display:inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; padding: 4px 10px;
+  background: var(--surface-3); border-radius: 999px;
+  color: var(--ink-2);
+  margin-top: 6px; margin-left: 4px;
+}
+.attach .x{
+  cursor: pointer; color: var(--ink-4);
+  background: transparent; border: 0; font-size: 14px; line-height: 1;
+}
+.attach .x:hover{ color: var(--critical); }
+
+/* Real map */
+.real-map{
+  height: 320px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.real-map .leaflet-container{ font-family: var(--font); }
+.map-legend{
+  display:flex; flex-wrap: wrap; gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  font-size: 11px; color: var(--ink-3);
+}
+.map-legend .lg-item{ display:flex; align-items: center; gap: 6px; }
+.map-legend .lg-dot{ width: 10px; height: 10px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+
+/* External link icon hint */
+.ext::after{
+  content: "↗"; font-size: 10px; margin-right: 3px; opacity: .7;
+}
+
+@media (max-width: 960px){
+  .news-grid{ grid-template-columns: 1fr; }
+  .dev-card{ grid-template-columns: 40px 1fr; }
+  .dev-card .dev-status{ grid-column: 1 / -1; }
+}
+
+/* Source-of-truth note */
+.assumption-note{
+  margin-top: var(--s-7);
+  padding: var(--s-4);
+  background: var(--surface-2);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-sm);
+  font-size: 12px; color: var(--ink-3);
+}
+.assumption-note strong{ color: var(--ink-2); }
+
+/* ===== Open on Phone widget ===== */
+.phone-card{
+  background: linear-gradient(135deg, var(--surface-1) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  padding: var(--s-6);
+  position: relative;
+  overflow: hidden;
+}
+.phone-card::before{
+  content: '';
+  position: absolute;
+  inset: -40% -10% auto auto;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(176,138,79,0.10), transparent 70%);
+  pointer-events: none;
+}
+.phone-grid{
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: var(--s-6);
+  align-items: start;
+  position: relative;
+}
+.phone-eyebrow{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--brand);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.phone-steps{
+  margin: var(--s-4) 0 var(--s-4);
+  display: grid;
+  gap: var(--s-3);
+}
+.phone-step{
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.phone-step .step-num{
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--ink-inverse, #0B1B33);
+  font-weight: 800; font-size: 13px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.phone-step .step-body strong{ font-size: 13.5px; color: var(--ink-1); }
+.phone-actions{
+  display: flex; gap: var(--s-2); flex-wrap: wrap;
+  margin-top: var(--s-3);
+}
+.share-help{
+  margin-top: var(--s-3);
+  padding: var(--s-3);
+  background: var(--surface-3, rgba(0,0,0,0.04));
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  display: none;
+}
+.share-help.open{ display: block; }
+.share-help code{
+  background: var(--surface-2);
+  padding: 1px 5px; border-radius: 4px;
+  font-size: 11.5px;
+}
+
+/* Phone mockup */
+.phone-mockup{
+  width: 200px; height: 400px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  border-radius: 36px;
+  padding: 8px;
+  position: relative;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35), inset 0 0 0 2px rgba(255,255,255,0.06);
+}
+.phone-screen{
+  width: 100%; height: 100%;
+  background: linear-gradient(160deg, #0B1B33 0%, #14294a 100%);
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+  padding: 28px 14px 14px;
+  display: flex; flex-direction: column;
+  align-items: center;
+}
+.phone-notch{
+  position: absolute;
+  top: 14px; left: 50%;
+  transform: translateX(-50%);
+  width: 80px; height: 22px;
+  background: #000;
+  border-radius: 12px;
+  z-index: 2;
+}
+.phone-statusbar{
+  position: absolute;
+  top: 8px; left: 18px; right: 18px;
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: #fff;
+  font-weight: 600;
+  z-index: 1;
+}
+.phone-app-icon{
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, #B08A4F 0%, #8a6a3a 100%);
+  border-radius: 16px;
+  display: grid; place-items: center;
+  font-size: 36px; font-weight: 800;
+  color: #0B1B33;
+  margin-top: 28px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+.phone-app-name{
+  color: #fff; font-size: 14px; font-weight: 700;
+  margin-top: 10px;
+}
+.phone-app-sub{
+  color: rgba(255,255,255,0.6); font-size: 10px;
+  margin-top: 2px;
+}
+.phone-mini-stat{
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(176,138,79,0.25);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-top: 12px;
+  text-align: right;
+}
+.phone-mini-stat .lab{
+  color: rgba(255,255,255,0.55); font-size: 9px;
+  letter-spacing: 0.06em;
+}
+.phone-mini-stat .val{
+  color: #fff; font-size: 16px; font-weight: 700;
+  margin-top: 2px;
+}
+.phone-mini-stat .val.sm{ font-size: 12px; color: #f5b942; }
+.phone-mini-stat.alt{ background: rgba(176,138,79,0.12); }
+
+@media (max-width: 720px){
+  .phone-grid{ grid-template-columns: 1fr; }
+  .phone-right{ order: -1; }
+  .phone-mockup{ width: 170px; height: 340px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============================ SIDE RAIL (DESKTOP) ============================ -->
+  <aside class="rail" aria-label="ניווט ראשי">
+    <div class="rail-brand">
+      <div class="rail-logo">D</div>
+      <div>
+        <div class="rail-name">Dira</div>
+        <div class="rail-tag">מרכז שליטה אישי</div>
+      </div>
+    </div>
+
+    <nav class="rail-nav" id="rail-nav">
+      <a class="rail-link active" data-route="dashboard" href="#dashboard">
+        <span class="ico">⌂</span><span class="lab">דשבורד</span>
+      </a>
+      <a class="rail-link" data-route="tasks" href="#tasks">
+        <span class="ico">✓</span><span class="lab">משימות</span>
+        <span class="ct" id="rail-tasks-ct">—</span>
+      </a>
+      <a class="rail-link" data-route="finance" href="#finance">
+        <span class="ico">₪</span><span class="lab">כדאיות פיננסית</span>
+      </a>
+      <a class="rail-link" data-route="area" href="#area">
+        <span class="ico">◎</span><span class="lab">אזור ואיכות חיים</span>
+      </a>
+      <a class="rail-link" data-route="market" href="#market">
+        <span class="ico">↗</span><span class="lab">מודיעין שוק</span>
+      </a>
+      <a class="rail-link" data-route="docs" href="#docs">
+        <span class="ico">▤</span><span class="lab">מסמכים וידע</span>
+      </a>
+      <a class="rail-link" data-route="scores" href="#scores">
+        <span class="ico">◐</span><span class="lab">Health & Opportunity</span>
+      </a>
+    </nav>
+
+    <div class="rail-foot">
+      <div>גב' אויה / ק' הסביונים · יהוד</div>
+      <div>הגרלה 2642 · מתחם 324 · 78396</div>
+      <div style="margin-top: 8px; opacity:.7;">v0.2 · נתוני mock + מקורות</div>
+    </div>
+  </aside>
+
+  <!-- ============================ TOPBAR ============================ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="topbar-title" id="screen-title">דשבורד · תמונת מצב</div>
+        <div class="topbar-sub" id="screen-sub">סקירה כוללת של מצב הפרויקט והפעולות הדרושות</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="last-visit" id="last-visit">ביקור אחרון · לפני 6 ימים</div>
+      <button class="icon-btn" title="התראות" style="position:relative;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/></svg>
+        <span class="badge" id="alert-badge">3</span>
+      </button>
+      <button class="icon-btn" title="חיפוש">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================ MAIN ============================ -->
+  <main class="main" id="main">
+
+    <!-- ============================ DASHBOARD ============================ -->
+    <section class="screen active" data-screen="dashboard">
+      <!-- Hero / executive summary -->
+      <div class="hero">
+        <span class="hero-eyebrow"><span class="dot"></span> זוכה · שלב מוקדם · טרם הוגשה בקשה להיתר</span>
+        <div class="hero-title">מחיר מטרה · גב' אויה / ק' הסביונים, יהוד</div>
+        <div class="hero-sub">
+          זכייה רשומה בהגרלה <strong>2642</strong> מתאריך 17.11.2025 במתחם <strong>324</strong> (78396) מבית <strong>אסיה סיירוס</strong>.
+          לפי אתר דירה בהנחה, מצב ההיתר: <strong>טרם הוגשה בקשה להיתר</strong> — שלב מוקדם מאוד, צפוי מעקב ארוך.
+          הערכת מסירה ריאלית: <strong>2029–2030</strong> (תלוי בקצב הוצאת היתרים והבנייה).
+        </div>
+        <div class="hero-row">
+          <div class="hero-stat">
+            <div class="lab">שווי הטבה משוער</div>
+            <div class="val">₪ <span id="kpi-benefit">692,190</span></div>
+            <div class="delta">+₪14,400 מאז ביקור אחרון</div>
+          </div>
+          <div class="hero-stat">
+            <div class="lab">מחיר זכייה למ״ר</div>
+            <div class="val">₪ 20,631</div>
+            <div class="delta">קבוע · נעול בהסכם</div>
+          </div>
+          <div class="hero-stat">
+            <div class="lab">מחיר שוק למ״ר · ק' הסביונים</div>
+            <div class="val">₪ <span id="kpi-market">31,200</span></div>
+            <div class="delta">+0.9% · 90 ימים</div>
+          </div>
+          <div class="hero-stat">
+            <div class="lab">פער מול שוק</div>
+            <div class="val"><span id="kpi-gap">37.6%</span></div>
+            <div class="delta">יציב · נמוך-בינוני</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next action + Risk -->
+      <div class="grid c2-1" style="margin-top: var(--s-5);">
+        <div class="next-action">
+          <div class="na-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M2 12h6m8 0h6"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="na-body">
+            <div class="na-title">לפעול: לעבור על תקנון התוכנית ולברר חובת מועד אישור משכנתא</div>
+            <div class="na-desc">בתוכנית מחיר מטרה הזוכה נדרש להגיש אישור משכנתא עקרוני בלוח זמנים שמופיע במכתב הזכייה הספציפי שלך — לפעמים 30 יום, לפעמים 90, תלוי במכרז. <strong>אל תניח</strong>, וודא במכתב.</div>
+            <div class="na-meta">
+              <span>📅 יעד מומלץ: לבדוק השבוע</span>
+              <span>⚠ דחיפות: בינונית</span>
+              <span>📄 מקור: מכתב זכייה אישי</span>
+            </div>
+          </div>
+          <button class="btn primary" onclick="goto('tasks')">פתח משימה</button>
+        </div>
+
+        <div class="risk">
+          <div class="row between">
+            <strong style="font-size:14px;">סיכון / אי-ודאות</strong>
+            <span class="pill warning dot">בינוני</span>
+          </div>
+          <div class="risk-bar"><div style="width: 42%;"></div></div>
+          <div class="risk-legend">
+            <span>נמוך</span><span>בינוני</span><span>גבוה</span>
+          </div>
+          <div class="muted" style="font-size:12px; margin-top: var(--s-3);">
+            עיקר אי-הוודאות: לוחות זמנים תכנוניים מול הוועדה המקומית, מדד תשומות הבנייה, וריבית משכנתא.
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline strip -->
+      <div class="section-h">
+        <h2>Timeline משוער למסירה</h2>
+        <span class="meta">הערכה · מתעדכן עם אבני דרך</span>
+      </div>
+      <div class="timeline" id="timeline"></div>
+
+      <!-- Alerts + What changed -->
+      <div class="grid c2" style="margin-top: var(--s-6);">
+        <div class="card tight">
+          <div class="row between" style="margin-bottom: var(--s-3);">
+            <strong style="font-size:14px;">התראות פתוחות</strong>
+            <span class="pill critical dot" id="alerts-open-count">3 פתוחות</span>
+          </div>
+          <div class="alerts" id="alerts-list"></div>
+        </div>
+
+        <div class="card tight">
+          <div class="row between" style="margin-bottom: var(--s-3);">
+            <strong style="font-size:14px;">מה השתנה מאז הביקור האחרון</strong>
+            <span class="pill brand">7 שינויים</span>
+          </div>
+          <div class="changelog" id="changelog"></div>
+        </div>
+      </div>
+
+      <!-- Score snapshot -->
+      <div class="section-h">
+        <h2>מדדי המערכת · תמונת מצב</h2>
+        <a href="#scores" class="btn ghost" onclick="goto('scores')">למסך המלא ←</a>
+      </div>
+      <div class="grid c3" id="score-snapshot"></div>
+
+      <!-- Open on phone widget -->
+      <div class="section-h">
+        <h2>פתיחה במכשיר נייד</h2>
+        <span class="meta">PWA · התקנה כאפליקציה</span>
+      </div>
+      <div class="card phone-card">
+        <div class="phone-grid">
+          <div class="phone-left">
+            <div class="phone-eyebrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+              <span>שימוש כאפליקציה אישית</span>
+            </div>
+            <h3 style="margin:6px 0 8px; font-size:18px;">הדשבורד שלך — גם בכיס</h3>
+            <p class="muted" style="font-size:13px; line-height:1.6;">
+              הקובץ נשמר אצלך מקומית. כדי לפתוח אותו בנייד, צריך פעם אחת להעביר את הקובץ לטלפון, ואז אפשר להוסיף לבית כאייקון אפליקציה (ללא חיבור אינטרנט בכלל).
+            </p>
+            <div class="phone-steps">
+              <div class="phone-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                  <strong>העבר את הקובץ לאייפון/אנדרואיד</strong>
+                  <div class="muted" style="font-size:12.5px; margin-top:2px;">
+                    האפשרות המהירה ביותר: <strong>AirDrop</strong> מהמק לאייפון. לחילופין: שלח לעצמך במייל, או שמור ב-iCloud Drive / Google Drive ופתח דרך אפליקציית הקבצים.
+                  </div>
+                </div>
+              </div>
+              <div class="phone-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                  <strong>פתח ב-Safari (אייפון) או Chrome (אנדרואיד)</strong>
+                  <div class="muted" style="font-size:12.5px; margin-top:2px;">
+                    לחץ על הקובץ HTML באפליקציית הקבצים → <em>Open in Safari</em>. הדף ייטען מקומית, מהר, וללא צורך באינטרנט.
+                  </div>
+                </div>
+              </div>
+              <div class="phone-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                  <strong>הוסף למסך הבית</strong>
+                  <div class="muted" style="font-size:12.5px; margin-top:2px;">
+                    באייפון: כפתור Share <span style="font-family:Menlo,monospace;">⎋</span> → <em>Add to Home Screen</em>. באנדרואיד: תפריט שלוש הנקודות → <em>Install app / הוסף למסך הבית</em>. יופיע אייקון D על המסך — והקובץ ייפתח כמו אפליקציה רגילה במסך מלא.
+                  </div>
+                </div>
+              </div>
+              <div class="phone-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                  <strong>נתונים אישיים נשמרים על המכשיר</strong>
+                  <div class="muted" style="font-size:12.5px; margin-top:2px;">
+                    הערות, סטטוסי משימות וקבצים שאתה מצרף נשמרים ב-localStorage של הדפדפן בנייד — נפרדים מהמחשב. אם תרצה סנכרון מלא בין מחשב לטלפון, בעתיד נחבר Backend / iCloud / Google Drive.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-actions">
+              <button class="btn primary" onclick="copyFilePath()" id="copy-path-btn">העתק נתיב קובץ</button>
+              <button class="btn" onclick="document.getElementById('share-help').classList.toggle('open')">איך עושים AirDrop? ⌄</button>
+            </div>
+            <div id="share-help" class="share-help">
+              <strong style="font-size:13px;">AirDrop מהמק לאייפון — שלב אחר שלב:</strong>
+              <ol style="margin:6px 18px 0 0; padding:0; font-size:12.5px; line-height:1.7;">
+                <li>פתח Finder על המק → תיקיית <code>Dira</code>.</li>
+                <li>לחץ קליק ימני על <code>dira-yehud-dashboard.html</code> → <em>Share → AirDrop</em>.</li>
+                <li>בחר את האייפון שלך מהרשימה (וודא ש-AirDrop פתוח על האייפון: Settings → General → AirDrop → Everyone for 10 Minutes).</li>
+                <li>על האייפון: אשר את הקבלה → הקובץ יישמר באפליקציית <strong>Files</strong> בתיקיית Downloads.</li>
+                <li>פתח את הקובץ → ייפתח אוטומטית ב-Safari → המשך לשלב 3 למעלה.</li>
+              </ol>
+            </div>
+          </div>
+          <div class="phone-right">
+            <div class="phone-mockup">
+              <div class="phone-screen">
+                <div class="phone-statusbar">
+                  <span>9:41</span>
+                  <span>●●●● ⏵</span>
+                </div>
+                <div class="phone-app-icon">D</div>
+                <div class="phone-app-name">דירה</div>
+                <div class="phone-app-sub">יהוד · מחיר מטרה</div>
+                <div class="phone-mini-stat">
+                  <div class="lab">שווי הטבה</div>
+                  <div class="val">₪692K</div>
+                </div>
+                <div class="phone-mini-stat alt">
+                  <div class="lab">מצב היתר</div>
+                  <div class="val sm">טרם הוגש</div>
+                </div>
+              </div>
+              <div class="phone-notch"></div>
+            </div>
+            <div class="muted" style="font-size:11.5px; text-align:center; margin-top:10px;">
+              כך זה ייראה לאחר התקנה כ-PWA<br>על מסך הבית של הטלפון
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="assumption-note">
+        <strong>הנחות שמופיעות בדשבורד · מקורות:</strong>
+        פרטי הפרויקט (מספר הגרלה 2642, מחיר 20,631 ₪/מ״ר, 148/118 יח״ד, מצב היתר) — מתוך
+        <a href="https://www.dira.moch.gov.il" target="_blank" class="ext">אתר דירה בהנחה (משרד הבינוי והשיכון)</a>.
+        מחיר שוק למ״ר בק' הסביונים מבוסס על ממוצע משוכלל של
+        <a href="https://www.yad2.co.il/realestate/forsale?city=2620&neighborhood=1483" target="_blank" class="ext">מודעות יד2</a>
+        ו-
+        <a href="https://www.madlan.co.il/local/יהוד-מונוסון" target="_blank" class="ext">מדלן</a>
+        — נכון לחודש האחרון (נתון מדגם, לא מקור רשמי).
+        חלון מסירה משוער 2029–2030 לאור מצב היתר נוכחי.
+        נתונים המסומנים <span class="pill">mock</span> יוחלפו בעת חיבור מקור אמיתי.
+      </div>
+    </section>
+
+    <!-- ============================ TASKS ============================ -->
+    <section class="screen" data-screen="tasks">
+      <h1 class="h">משימות</h1>
+      <p class="sub">checklist חכם לפי קטגוריה. לחץ על הריבוע כדי לסמן משימה כהושלמה.</p>
+
+      <div class="grid c4" style="margin-bottom: var(--s-5);">
+        <div class="prog">
+          <div class="prog-row"><span>סך הכל</span><strong id="t-total">—</strong></div>
+          <div class="prog-bar"><div id="t-total-bar" style="width:0%"></div></div>
+          <div class="muted" style="font-size:12px;">השלמה כללית</div>
+        </div>
+        <div class="prog">
+          <div class="prog-row"><span class="text-critical">דחוף</span><strong id="t-urgent">—</strong></div>
+          <div class="prog-bar"><div id="t-urg-bar" style="width:0%; background: var(--critical);"></div></div>
+          <div class="muted" style="font-size:12px;">משימות בדחיפות גבוהה</div>
+        </div>
+        <div class="prog">
+          <div class="prog-row"><span class="text-warning">פתוחות 30 יום</span><strong id="t-30">—</strong></div>
+          <div class="prog-bar"><div id="t-30-bar" style="width:0%; background: var(--warning);"></div></div>
+          <div class="muted" style="font-size:12px;">קרוב ליעד</div>
+        </div>
+        <div class="prog">
+          <div class="prog-row"><span class="text-success">הושלמו</span><strong id="t-done">—</strong></div>
+          <div class="prog-bar"><div id="t-done-bar" style="width:0%; background: var(--success);"></div></div>
+          <div class="muted" style="font-size:12px;">סגורות</div>
+        </div>
+      </div>
+
+      <div class="tabs" id="task-tabs"></div>
+      <div class="task-list" id="task-list"></div>
+    </section>
+
+    <!-- ============================ FINANCE ============================ -->
+    <section class="screen" data-screen="finance">
+      <h1 class="h">כדאיות פיננסית</h1>
+      <p class="sub">חישוב חי של ההטבה, עלויות נלוות ותרחישים. כל מספר ניתן לשינוי בהמשך.</p>
+
+      <div class="grid c1-2" style="margin-bottom: var(--s-5);">
+        <div class="benefit-card">
+          <div class="label">שווי הטבה כולל (פער מול מחיר שוק)</div>
+          <div class="big">₪ <span id="ben-total">692,190</span></div>
+          <div class="pct">≈ <span id="ben-pct">37.6%</span> מתחת לשוק · על דירה של <span id="ben-size">90</span> מ״ר</div>
+          <div class="desc">
+            ההטבה הזו נצברת לאט. היא קיימת על הנייר היום, מתממשת בפועל רק ביום החתימה על החוזה הסופי,
+            ויכולה לגדול / להצטמצם לפי תנודות מדד תשומות הבנייה ומחירי האזור.
+          </div>
+        </div>
+
+        <div class="card">
+          <strong style="font-size:14px;">סימולטור גודל דירה</strong>
+          <div class="muted" style="font-size:12px; margin-bottom: var(--s-4);">גרור כדי לראות איך ההטבה משתנה לפי המ״ר</div>
+          <div class="row between" style="font-size:13px;">
+            <span>שטח</span><strong><span id="size-val">90</span> מ״ר</strong>
+          </div>
+          <input type="range" min="70" max="140" value="90" step="1" class="range" id="size-range">
+          <div class="row between" style="font-size:12px; color: var(--ink-3); margin-top: -6px;">
+            <span>70</span><span>140 מ״ר</span>
+          </div>
+
+          <div class="h-divider"></div>
+
+          <div class="row between" style="font-size:13px;"><span>מחיר זכייה</span><strong>₪ <span id="sim-win">1,856,790</span></strong></div>
+          <div class="row between" style="font-size:13px; margin-top:6px;"><span>מחיר שוק משוער</span><strong>₪ <span id="sim-mkt">2,548,980</span></strong></div>
+          <div class="row between" style="font-size:13px; margin-top:6px; color: var(--success);"><span>חיסכון</span><strong>₪ <span id="sim-save">692,190</span></strong></div>
+        </div>
+      </div>
+
+      <div class="grid c2">
+        <div class="card">
+          <div class="row between" style="margin-bottom: var(--s-3);">
+            <strong style="font-size:14px;">עלויות נלוות (אומדן)</strong>
+            <div class="scenario-tabs" id="scen-tabs">
+              <button class="scenario-tab" data-scen="con">שמרני</button>
+              <button class="scenario-tab active" data-scen="base">בסיס</button>
+              <button class="scenario-tab" data-scen="opt">אופטימי</button>
+            </div>
+          </div>
+          <table class="cost-table" id="cost-table">
+            <thead><tr><th style="width:55%">סעיף</th><th>תיאור</th><th class="num">סכום</th></tr></thead>
+            <tbody></tbody>
+          </table>
+
+          <div class="insight" style="margin-top: var(--s-4);">
+            <div class="ico">!</div>
+            <div>
+              <strong>מה זה אומר עבורך:</strong>
+              ההטבה ברוטו מרשימה, אבל יש להפחית כ-<strong id="costs-pct">9–11%</strong> עלויות נלוות.
+              ההטבה נטו צפויה לעמוד על <strong id="net-benefit">₪ 488–545 אלף</strong> בתרחיש בסיס. שמור רזרבה של 5% נוספים — מדד התשומות לא נשאר במקום.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <strong style="font-size:14px;">מחיר מ״ר באזור · 24 חודשים</strong>
+          <div class="muted" style="font-size:12px; margin-bottom: var(--s-3);">
+            מקור משוער · בעת חיבור ל-
+            <a href="https://www.yad2.co.il/realestate/forsale?city=2620" target="_blank" class="ext">יד2 יהוד</a> /
+            <a href="https://www.nadlan.gov.il" target="_blank" class="ext">נדל"ן (רשות המסים)</a>
+            הנתונים יוחלפו בפועליים.
+          </div>
+          <div class="chart-wrap"><canvas id="chart-price"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section-h"><h2>תרחישים — שווי ההטבה בעוד 18 חודשים</h2></div>
+      <div class="grid c3">
+        <div class="card">
+          <div class="muted" style="font-size:12px;">שמרני</div>
+          <div style="font-size:22px; font-weight:700; margin-top: 4px;">₪ 612K</div>
+          <div class="muted" style="font-size:12px; margin-top: 4px;">אם השוק יקפא או ירד 3%</div>
+          <div class="pill warning dot" style="margin-top: var(--s-3);">סיכון תקציב +5%</div>
+        </div>
+        <div class="card" style="border-color: var(--brand); box-shadow: var(--shadow-2);">
+          <div class="muted" style="font-size:12px;">בסיס</div>
+          <div style="font-size:22px; font-weight:700; margin-top: 4px;">₪ 720K</div>
+          <div class="muted" style="font-size:12px; margin-top: 4px;">בהנחת עליית שוק של 4% שנתי</div>
+          <div class="pill brand" style="margin-top: var(--s-3);">תרחיש מרכזי</div>
+        </div>
+        <div class="card">
+          <div class="muted" style="font-size:12px;">אופטימי</div>
+          <div style="font-size:22px; font-weight:700; margin-top: 4px;">₪ 845K</div>
+          <div class="muted" style="font-size:12px; margin-top: 4px;">אם השוק יעלה 8% עד מסירה</div>
+          <div class="pill success dot">פוטנציאל גבוה</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ AREA ============================ -->
+    <section class="screen" data-screen="area">
+      <h1 class="h">אזור ואיכות חיים</h1>
+      <p class="sub">סביבת הפרויקט — חינוך, בריאות, פנאי, תחבורה. נבנה מנקודת מבט משפחתית.</p>
+
+      <div class="grid c1-2" style="margin-bottom: var(--s-5);">
+        <div class="card tight" style="padding: 0; overflow: hidden;">
+          <div class="real-map" id="real-map"></div>
+          <div class="map-legend">
+            <span class="lg-item"><span class="lg-dot" style="background: #B08A4F;"></span>הפרויקט</span>
+            <span class="lg-item"><span class="lg-dot" style="background: #92400E;"></span>חינוך</span>
+            <span class="lg-item"><span class="lg-dot" style="background: #166534;"></span>גנים</span>
+            <span class="lg-item"><span class="lg-dot" style="background: #991B1B;"></span>בריאות</span>
+            <span class="lg-item"><span class="lg-dot" style="background: #1E40AF;"></span>תחבורה</span>
+            <span class="lg-item"><span class="lg-dot" style="background: #6B21A8;"></span>קניות</span>
+            <span class="lg-item" style="margin-right:auto;">
+              <a href="https://www.openstreetmap.org/?mlat=32.0322&mlon=34.8920#map=16/32.0322/34.8920" target="_blank" class="ext">פתח ב-OpenStreetMap</a> ·
+              <a href="https://www.google.com/maps/search/?api=1&query=קריית+הסביונים+יהוד" target="_blank" class="ext">פתח ב-Google Maps</a> ·
+              <a href="https://www.govmap.gov.il/?c=193535,664010&z=8" target="_blank" class="ext">GovMap</a>
+            </span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row" style="gap: var(--s-4);">
+            <div class="donut" data-score="83" data-color="success"></div>
+            <div>
+              <div class="muted" style="font-size:12px;">Family Fit Score</div>
+              <strong style="font-size: 16px;">מתאים מאוד למשפחה</strong>
+              <p class="muted" style="font-size:13px; margin: 8px 0 0;">
+                שילוב טוב של מוסדות חינוך איכותיים בקרבת הפרויקט, פארקים גדולים בטווח הליכה, וגישה נוחה לתחבורה ציבורית.
+                החיסרון העיקרי: רעש מציר מסילת הרכבת בשעות בוקר.
+              </p>
+            </div>
+          </div>
+
+          <div class="h-divider"></div>
+
+          <strong style="font-size:13px;">יתרונות וחסרונות</strong>
+          <div class="grid c2" style="gap: var(--s-3); margin-top: var(--s-3); font-size:12px;">
+            <div style="background: var(--success-soft); padding: 10px; border-radius: 8px; color: var(--success);">
+              <strong>+</strong> סמיכות לסביון וגני יהודה<br>
+              <strong>+</strong> בתי ספר ברמה גבוהה<br>
+              <strong>+</strong> רכבת ושכונת תעסוקה קרובה
+            </div>
+            <div style="background: var(--critical-soft); padding: 10px; border-radius: 8px; color: var(--critical);">
+              <strong>–</strong> פקקים בכניסה לעיר בבוקר<br>
+              <strong>–</strong> עומס בנייה בשנים הקרובות<br>
+              <strong>–</strong> רעש רכבת באזורים מסוימים
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-h"><h2>נקודות עניין מרכזיות</h2></div>
+      <div class="grid c2">
+        <div class="card">
+          <strong style="font-size:13px;">חינוך</strong>
+          <div class="poi-list" id="poi-edu"></div>
+        </div>
+        <div class="card">
+          <strong style="font-size:13px;">בריאות, פנאי וקניות</strong>
+          <div class="poi-list" id="poi-life"></div>
+        </div>
+      </div>
+
+      <div class="grid c2" style="margin-top: var(--s-4);">
+        <div class="card">
+          <strong style="font-size:13px;">תחבורה ציבורית וצירי תנועה</strong>
+          <div class="poi-list" id="poi-transit"></div>
+        </div>
+        <div class="card">
+          <strong style="font-size:13px;">שטחים פתוחים ופארקים</strong>
+          <div class="poi-list" id="poi-park"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ MARKET ============================ -->
+    <section class="screen" data-screen="market">
+      <h1 class="h">מודיעין שוק</h1>
+      <p class="sub">מחירים, מגמות והשוואות באזור. הנתונים נכונים לחודש האחרון (mock).</p>
+
+      <div class="grid c4" style="margin-bottom: var(--s-5);">
+        <div class="kpi">
+          <div class="kpi-deco"></div>
+          <div class="kpi-label">מחיר ממוצע למ״ר · ק' הסביונים</div>
+          <div class="kpi-value">₪ 31,200</div>
+          <div class="kpi-sub text-success">+0.9% / 90 ימים</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">מודעות פעילות באזור</div>
+          <div class="kpi-value">87</div>
+          <div class="kpi-sub">דירות 4-5 חדרים</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">ימי שיווק ממוצעים</div>
+          <div class="kpi-value">52</div>
+          <div class="kpi-sub text-warning">+9 ימים מהממוצע השנתי</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">עסקאות אחרונות (90 יום)</div>
+          <div class="kpi-value">23</div>
+          <div class="kpi-sub">ממוצע ₪ 2.55M</div>
+        </div>
+      </div>
+
+      <div class="grid c2-1" style="margin-bottom: var(--s-5);">
+        <div class="card">
+          <div class="row between" style="margin-bottom: var(--s-3);">
+            <strong style="font-size:14px;">מחיר מ״ר · השוואה רב-זמנית</strong>
+            <div class="tabs" style="margin: 0; padding: 3px;">
+              <button class="tab active" data-period="3">3 חודשים</button>
+              <button class="tab" data-period="12">12 חודשים</button>
+              <button class="tab" data-period="24">24 חודשים</button>
+            </div>
+          </div>
+          <div class="chart-wrap tall"><canvas id="chart-trend"></canvas></div>
+        </div>
+
+        <div class="card">
+          <strong style="font-size:14px;">תובנה</strong>
+          <p style="font-size:13px; margin: 8px 0 var(--s-3); color: var(--ink-2);">
+            השוק בק' הסביונים יציב יחסית. עליה של 0.9% ברבעון משקפת התקררות מסוימת מול 12 החודשים האחרונים (+6.1%).
+            במונחי ההטבה שלך — זה לא רע: אם המחיר היה רץ מהר, הסיכון העיקרי היה בועה. <br>
+            <strong>שורת הסיכום:</strong> הזמן עובד לטובתך, אבל אל תצפה לזינוק חד.
+          </p>
+          <div class="insight">
+            <div class="ico">↗</div>
+            <div>
+              <strong>מה לעשות:</strong>
+              שמור על מעקב חודשי. אם תראה ירידה של מעל 4% במשך רבעון, זה דגל אדום — נתח מחדש את התרחיש השמרני.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-h"><h2>השוואת מחירים בין שכונות</h2></div>
+      <div class="comp-grid" id="comp-grid"></div>
+
+      <div class="section-h">
+        <h2>מודעות נבחרות באזור</h2>
+        <span class="meta">לחיצה תוביל למודעה במקור (יד2 / מדלן)</span>
+      </div>
+      <div class="card">
+        <div id="listings"></div>
+      </div>
+
+      <div class="section-h">
+        <h2>פיתוח עירוני בסביבה — מה עתיד להשפיע על המחיר</h2>
+        <span class="meta">תכניות תחבורה, תשתיות ובנייה</span>
+      </div>
+      <div class="grid" id="urban-dev" style="grid-template-columns: 1fr; gap: var(--s-3);"></div>
+
+      <div class="section-h">
+        <h2>חדשות וכתבות רלוונטיות</h2>
+        <span class="meta">איסוף חצי-ידני מאתרי חדשות נדל"ן</span>
+      </div>
+      <div class="news-grid" id="news-grid"></div>
+    </section>
+
+    <!-- ============================ DOCS ============================ -->
+    <section class="screen" data-screen="docs">
+      <h1 class="h">מסמכים וידע</h1>
+      <p class="sub">knowledge hub: כל מה שקשור לזכייה במקום אחד — חוזים, תקנון, אנשי קשר, יומן.</p>
+
+      <div class="grid c1-2">
+        <div class="card">
+          <div class="row between" style="margin-bottom: var(--s-3);">
+            <strong style="font-size:14px;">מסמכי הפרויקט</strong>
+            <span class="muted" style="font-size:11px;">קבצים נשמרים ב-<code style="background: var(--surface-3); padding: 2px 6px; border-radius: 4px;">/Dira/dira-uploads/</code></span>
+          </div>
+
+          <label class="upload-zone" for="doc-upload" style="margin-bottom: var(--s-3);">
+            <div class="ic">⬆</div>
+            <div class="title">העלאת מסמך חדש</div>
+            <div class="sub">PDF, DOCX, JPG, PNG · גרור-ושחרר או לחץ</div>
+            <input type="file" id="doc-upload" multiple accept=".pdf,.docx,.doc,.jpg,.jpeg,.png,.heic">
+          </label>
+
+          <div id="docs-list"></div>
+        </div>
+
+        <div class="card">
+          <strong style="font-size:14px;">אנשי קשר</strong>
+          <div class="grid" style="gap: var(--s-3); margin-top: var(--s-3); grid-template-columns: 1fr;">
+            <div class="contact-card"><div class="avatar">אס</div>
+              <div><div style="font-weight:600;">אסיה סיירוס · נציג היזם</div><div class="muted" style="font-size:12px;">support@asia-cyrus.co.il</div></div></div>
+            <div class="contact-card"><div class="avatar">עו</div>
+              <div><div style="font-weight:600;">עו״ד הפרויקט (לבחירה)</div><div class="muted" style="font-size:12px;">להחליט תוך 30 יום</div></div></div>
+            <div class="contact-card"><div class="avatar">בנ</div>
+              <div><div style="font-weight:600;">יועץ משכנתאות</div><div class="muted" style="font-size:12px;">פגישה מתוזמנת — 12.06.2026</div></div></div>
+            <div class="contact-card"><div class="avatar">מש</div>
+              <div><div style="font-weight:600;">משרד הבינוי והשיכון</div><div class="muted" style="font-size:12px;">אזור 02-5847000</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid c2" style="margin-top: var(--s-4);">
+        <div class="card">
+          <strong style="font-size:14px;">שאלות פתוחות לבדיקה</strong>
+          <div class="muted" style="font-size:12px; margin-bottom: var(--s-3);">לקראת פגישה הבאה עם עו״ד / יזם / בנק</div>
+          <div id="q-list"></div>
+        </div>
+
+        <div class="card">
+          <strong style="font-size:14px;">יומן אירועים ולוג עדכונים</strong>
+          <div class="muted" style="font-size:12px; margin-bottom: var(--s-3);">היסטוריית הפרויקט שלך</div>
+          <div id="event-log"></div>
+        </div>
+      </div>
+
+      <div class="grid c2" style="margin-top: var(--s-4);">
+        <div class="card">
+          <strong style="font-size:14px;">בדיקות לפני החלטות חשובות</strong>
+          <div class="muted" style="font-size:12px; margin-bottom: var(--s-3);">צ׳קליסטים מובנים</div>
+          <div id="precheck-list"></div>
+        </div>
+        <div class="card">
+          <strong style="font-size:14px;">Notes אישיים</strong>
+          <div class="muted" style="font-size:12px; margin-bottom: var(--s-3);">המחשבות שלך, נשמרות מקומית</div>
+          <textarea id="notes-area" rows="10" style="width:100%; padding: var(--s-3); border:1px solid var(--line); border-radius: var(--r-sm); resize: vertical; font-family: var(--font); font-size: 13px;"
+            placeholder="נשמע כאן את כל מה שעולה לך — שאלות לעו״ד, מחשבות על שדרוגים, רשמים מסיורי שטח..."></textarea>
+          <div class="muted" style="font-size:11px; margin-top: 6px;" id="notes-status">טרם נשמר</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ SCORES ============================ -->
+    <section class="screen" data-screen="scores">
+      <h1 class="h">Health & Opportunity</h1>
+      <p class="sub">שכבת ה-Intelligence של המערכת. כל ציון מחושב מתוך הנתונים, ומתעדכן עם כל שינוי.</p>
+
+      <div class="grid" style="grid-template-columns: 1fr; gap: var(--s-4);" id="scores-list"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Source/info modal -->
+<div class="modal-backdrop" id="src-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="src-modal-title">
+    <div class="modal-head">
+      <span class="src-conf" id="src-modal-conf">מקור</span>
+      <h3 id="src-modal-title">כותרת</h3>
+      <button class="modal-close" onclick="closeModal()" aria-label="סגור">×</button>
+    </div>
+    <div class="modal-body" id="src-modal-body"></div>
+    <div class="modal-foot">
+      <span id="src-modal-foot-left">—</span>
+      <span class="muted">לחץ Esc לסגירה</span>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile bottom tabs -->
+<nav class="mobile-tabs" id="mobile-tabs">
+  <button class="mt-link active" data-route="dashboard"><span class="ico">⌂</span><span>סקירה</span></button>
+  <button class="mt-link" data-route="tasks"><span class="ico">✓</span><span>משימות</span></button>
+  <button class="mt-link" data-route="finance"><span class="ico">₪</span><span>כדאיות</span></button>
+  <button class="mt-link" data-route="area"><span class="ico">◎</span><span>אזור</span></button>
+  <button class="mt-link" data-route="market"><span class="ico">↗</span><span>שוק</span></button>
+  <button class="mt-link" data-route="scores"><span class="ico">◐</span><span>מדדים</span></button>
+</nav>
+
+<script>
+/* ===========================================================
+   DIRA — STATE, DATA, RENDER
+   Architecture:
+   - DATA layer: pure JS objects (mock). Each entity exposes a
+     `getX()` accessor. Future adapters (yad2, madlan, govmap…)
+     can replace these accessors without touching UI.
+   - STATE layer: app-level mutable state (current scenario,
+     completed tasks, sim size, last visit).
+   - UI layer: render functions, one per screen, called on route
+     change.
+   - ROUTER: hash-based, dual-bound to side rail and bottom tabs.
+   =========================================================== */
+
+/* ============== UTILS ============== */
+const fmt = {
+  nis: (n)=> '₪ ' + Math.round(n).toLocaleString('he-IL'),
+  num: (n)=> Math.round(n).toLocaleString('he-IL'),
+  pct: (n, d=1)=> (n*100).toFixed(d) + '%',
+  short: (n)=> n>=1000 ? (n/1000).toFixed(0) + 'K' : Math.round(n).toLocaleString('he-IL'),
+  date: (iso)=> new Date(iso).toLocaleDateString('he-IL', {year:'numeric', month:'2-digit', day:'2-digit'}),
+  rel: (iso)=>{
+    const d = new Date(iso); const now = new Date();
+    const days = Math.round((d - now) / 86400000);
+    if (days === 0) return 'היום';
+    if (days === 1) return 'מחר';
+    if (days === -1) return 'אתמול';
+    if (days > 0) return `בעוד ${days} ימים`;
+    return `לפני ${-days} ימים`;
+  }
+};
+const el = (sel, root=document)=> root.querySelector(sel);
+const els = (sel, root=document)=> [...root.querySelectorAll(sel)];
+
+/* ============== DATA: PROJECT ============== */
+const project = {
+  name: 'גב\' אויה / ק\' הסביונים · יהוד',
+  developer: 'אסיה סיירוס',
+  city: 'יהוד-מונוסון',
+  neighborhood: 'גב\' אויה / קריית הסביונים',
+  lotteryId: '2642',
+  complexId: '324',
+  matchamId: '78396',
+  programType: 'מחיר מטרה',
+  pricePerSqmWin: 20631,
+  pricePerSqmMarket: 31200,   // updated to Kiryat HaSavyonim figure
+  marketAtRegistration: 28322,
+  totalUnits: 148,
+  discountedUnits: 118,
+  localResidentsUnits: 3,
+  reservistsActiveUnits: 17,
+  reservistsCombatUnits: 24,
+  permitStatus: 'טרם הוגשה בקשה להיתר',
+  contractorWonDate: '2024-12-23',
+  lotteryDate: '2025-11-17',
+  status: 'זוכה · שלב מוקדם · ללא היתר',
+  estDelivery: '2029–2030',
+  saleRestriction: '7 שנים מתאריך הזכייה או 5 שנים מטופס 4',
+  lastVisit: '2026-04-21',
+  // Approximate coordinates of Kiryat HaSavyonim, Yehud
+  geo: { lat: 32.0322, lng: 34.8920 },
+  sourceUrl: 'https://www.dira.moch.gov.il'
+};
+
+/* ============== DATA: MILESTONES ============== */
+const milestones = [
+  { phase: 'הגרלה',                  name: 'זכייה',                date: '17.11.2025',    status: 'done'   },
+  { phase: 'שלב נוכחי',              name: 'משכנתא + רגולציה',     date: '2026 · בעבודה', status: 'now'    },
+  { phase: 'ביניים',                 name: 'בקשה להיתר בנייה',     date: '2026–2027',     status: 'future' },
+  { phase: 'תכנון',                  name: 'בחירת דירה + חוזה',    date: '2027–2028',     status: 'future' },
+  { phase: 'בנייה',                  name: 'בנייה בפועל',          date: '2028–2030',     status: 'future' },
+  { phase: 'מסירה',                  name: 'מסירת מפתח',           date: '2029–2030',     status: 'future' }
+];
+
+/* ============== DATA: ALERTS ============== */
+const alerts = [
+  { type:'warn', title:'בדוק את מכתב הזכייה שלך — מועד אישור משכנתא',
+    body:'מועד הגשת אישור משכנתא עקרוני מופיע במכתב הזכייה האישי. אל תניח 60 יום — הוא יכול להיות גם 30.',
+    time:'נוסף לפני 2 ימים' },
+  { type:'crit', title:'מצב היתר: טרם הוגשה בקשה — דגל אדום לטווח קצר',
+    body:'5 חודשים מההגרלה ועדיין לא הוגשה בקשה להיתר. אם אין תזוזה תוך 6–12 חודשים נוספים, זה דוחה את כל לוח הזמנים.',
+    time:'מתעדכן רציף' },
+  { type:'info', title:'מדד תשומות הבנייה עלה ב-0.4% החודש',
+    body:'כל אחוז במדד מגדיל את החוב שלך מול היזם בכ-₪18–25 אלף לדירה ממוצעת. עקוב צמוד.',
+    time:'לפני 3 ימים' }
+];
+
+/* ============== DATA: CHANGELOG ============== */
+const changelog = [
+  { type:'up',   text:'מחיר שוק למ״ר עלה ל-₪31,200 (+₪160)',                  when:'לפני 3 ימים' },
+  { type:'flag', text:'מצב היתר נותר "טרם הוגשה בקשה" · 5 חודשים מההגרלה',   when:'לפני 2 ימים' },
+  { type:'up',   text:'נוספו 6 פריטי פיתוח עירוני באזור (מטרו, כביש, חינוך)', when:'לפני 4 ימים' },
+  { type:'down', text:'מספר עסקאות באזור ירד ל-23 (היה 27)',                  when:'לפני 5 ימים' },
+  { type:'flag', text:'תקנון התוכנית עודכן · נדרש עיון מחודש',                when:'לפני 6 ימים' },
+  { type:'up',   text:'Project Health Score עלה מ-71 ל-74',                    when:'לפני שבוע' },
+  { type:'down', text:'Delay Risk Score עלה מ-32 ל-38 (היעדר היתר)',          when:'לפני שבוע' }
+];
+
+/* ============== DATA: TASKS ============== */
+const taskCategories = [
+  { id:'all',     label:'הכל',         icon:'⌘' },
+  { id:'legal',   label:'משפטי',       icon:'⚖' },
+  { id:'finance', label:'פיננסי',      icon:'₪' },
+  { id:'bank',    label:'בנק/משכנתא',  icon:'⌗' },
+  { id:'developer',label:'מול היזם',   icon:'⌂' },
+  { id:'docs',    label:'מסמכים',      icon:'▤' },
+  { id:'select',  label:'בחירת דירה',  icon:'◎' },
+  { id:'sign',    label:'חתימה',       icon:'✎' },
+  { id:'long',    label:'אכלוס',       icon:'⏱' }
+];
+
+// Source library — referenced from each task
+const SOURCES = {
+  'dira-moch':       { conf:'official',    name:'דירה בהנחה · משרד הבינוי',           url:'https://www.dira.moch.gov.il' },
+  'tender-letter':   { conf:'official',    name:'מכתב זכייה אישי + תקנון המכרז',       url:null },
+  'rmi':             { conf:'official',    name:'רשות מקרקעי ישראל',                   url:'https://land.gov.il' },
+  'tax-authority':   { conf:'official',    name:'רשות המסים — מס רכישה',               url:'https://www.gov.il/he/departments/israel_tax_authority' },
+  'bank-israel':     { conf:'official',    name:'בנק ישראל — הוראות משכנתאות',         url:'https://www.boi.org.il' },
+  'industry':        { conf:'industry',    name:'נוהג מקובל בענף',                     url:null },
+  'recommended':     { conf:'recommended', name:'המלצה — לא חובה רגולטורית',          url:null },
+  'developer':       { conf:'official',    name:'התחייבויות היזם — אסיה סיירוס',       url:null },
+  'building-permit': { conf:'official',    name:'מנהל התכנון / ועדה מקומית יהוד',     url:'https://www.iplan.gov.il' }
+};
+
+const tasks = [
+  // Legal
+  { id:'L1', cat:'legal',     title:'בחירת עו״ד מתמחה בדירה בהנחה',
+    desc:'עו״ד עם ניסיון בתוכנית — לא עו״ד נדל״ן כללי. בתקנון הפרויקט עו״ד נדרש לצורך חתימה מול היזם.',
+    due:'2026-09-30', urg:'med',  owner:'אני',           dep:null,
+    cons:'בלי עו״ד אי אפשר לחתום על חוזה הרכישה.', state:'open',
+    src:'recommended',
+    srcDetail:'אין חובה רגולטורית להחזיק עו״ד "מהיום הראשון". הצורך מתעורר בשלב חתימת חוזה הרכישה (לאחר היתר ומפרט). יחד עם זאת, עורכי דין טובים נחטפים מהר — וההמלצה היא להתחיל לסקור 2–3 חודשים לפני שלב החוזה. בפרויקט שלך, צפוי שזה יהיה רחוק (2027–2028), אבל מומלץ להתחיל ליצור רשימת מועמדים השנה.' },
+  { id:'L2', cat:'legal',     title:'בדיקה משפטית של תקנון התוכנית והגבלת המכירה',
+    desc:'מפורש בתקנון: "מכירת הדירה מותרת לאחר 7 שנים ממועד זה או לאחר 5 שנים מיום קבלת טופס 4". יש משמעות מעשית.',
+    due:'2026-12-31', urg:'med',  owner:'אני + עו״ד',    dep:null,
+    cons:'אי-הבנה של ההגבלות יכולה לפגוע בגמישות עתידית.', state:'open',
+    src:'tender-letter',
+    srcDetail:'מופיע בעמוד פרטי הפרויקט באתר "דירה בהנחה" תחת "פרטי הגרלה". המגבלה היא תנאי הסכם המכר — לא ניתן לעקוף אותה.' },
+  { id:'L3', cat:'legal',     title:'הבנת זכויות וחובות לפי תקנון מכרז 2642',
+    desc:'תוקף הזכאות, תנאי ביטול, סבסובים, חובות דיווח.',
+    due:'2026-08-31', urg:'med', owner:'אני', dep:null,
+    cons:'איבוד זכאות בגלל אי-עמידה בתנאים פרוצדורליים.', state:'open',
+    src:'dira-moch',
+    srcDetail:'תקנון התוכנית מתעדכן מעת לעת. בעמוד הפרויקט באתר דירה בהנחה (מספר מתחם 78396, הגרלה 2642) מצוי הקישור ל"מידע נוסף" עם פרטים מלאים.' },
+
+  // Finance
+  { id:'F1', cat:'finance',   title:'בניית תקציב אישי לרכישה — כולל רזרבות',
+    desc:'הון עצמי + עלויות נלוות + רזרבת בטיחות 5–10%.',
+    due:'2026-05-20', urg:'high',  owner:'אני',           dep:null,
+    cons:'בלי תקציב ברור, סיכון ללחץ פיננסי בסבב המדד.', state:'done',
+    src:'recommended',
+    srcDetail:'תרגיל בסיסי לכל רוכש. אין דרישה רשמית — אבל בלי זה אי אפשר לקבל החלטות נכונות מול בנקים.' },
+
+  // Bank
+  { id:'B1', cat:'bank',      title:'בדיקת מועד חובת אישור משכנתא עקרוני',
+    desc:'במכתב הזכייה / תקנון המכרז יש פירוט המועד המדויק (לרוב 30–90 יום, תלוי במכרז).',
+    due:'2026-05-31', urg:'high',  owner:'אני',           dep:null,
+    cons:'איחור = הפסד זכאות בחלק מהמכרזים.', state:'open',
+    src:'tender-letter',
+    srcDetail:'תוכנית מחיר מטרה דורשת אישור משכנתא עקרוני בלוח זמנים שמופיע במכתב האישי שלך. <strong>אל תניח 60 יום</strong> — בדוק את המסמך הספציפי. במכרזים אחרונים זה נע בין 30 ל-90 יום מקבלת מכתב הזכייה.' },
+  { id:'B2', cat:'bank',      title:'אישור משכנתא עקרוני · בדיקה ב-2–3 בנקים',
+    desc:'השוואת תנאים אמיתית, לא רק "אישור".',
+    due:'2026-07-31', urg:'med',  owner:'אני + יועץ',    dep:'B1',
+    cons:'תמהיל לא אופטימלי = הפרש של עשרות אלפי ש״ח לאורך השנים.', state:'open',
+    src:'industry',
+    srcDetail:'הוראות בנק ישראל מאפשרות לפנות לכמה בנקים במקביל. בענף מקובל לפנות ל-3 לפחות. השוואה אמיתית דורשת לקבל "תיק לקוח" מלא — לא רק שיחת טלפון.' },
+  { id:'B3', cat:'bank',      title:'בדיקת זכאות לסבסוד ריבית במחיר מטרה',
+    desc:'יש סבסוד מסוים על משכנתא בחלק מהפרויקטים. לבדוק זכאות אישית.',
+    due:'2026-09-30', urg:'med',  owner:'אני',           dep:null,
+    cons:'ויתור על הטבה משמעותית.', state:'open',
+    src:'dira-moch',
+    srcDetail:'משרד הבינוי מפעיל הטבות נוספות לזכאים ספציפיים (חסרי דיור, מילואימניקים, וכו׳). פרטי הזכאות שלך — "חסרי דיור" — מופיעים בעמוד הפרויקט. כדאי לברר מול גוף הזכאות (הסוכנות הפועלת מטעם המשרד).' },
+
+  // Developer
+  { id:'D1', cat:'developer', title:'אישור פרטי קשר מול אסיה סיירוס',
+    desc:'כתובת מייל, טלפון, נציג מוקצה לפרויקט.',
+    due:'2026-05-10', urg:'low',   owner:'אני',           dep:null,
+    cons:'לא קריטי, אבל מאט תקשורת בעתיד.', state:'done',
+    src:'developer', srcDetail:'היזם מחויב לספק נציג מוקצה לפי תקנון המכרז.' },
+  { id:'D2', cat:'developer', title:'מעקב אחרי הגשת בקשה להיתר',
+    desc:'נכון להיום: <strong>טרם הוגשה בקשה להיתר</strong>. זה אבן הדרך הקריטית הקרובה.',
+    due:'2026-Q4', urg:'high', owner:'היזם → ועדה מקומית', dep:null,
+    cons:'כל יום עיכוב כאן דוחה את כל לוח הזמנים — כולל מועד המסירה.', state:'open',
+    src:'building-permit',
+    srcDetail:'מצב ההיתר מופיע באתר "דירה בהנחה" תחת "מצב פרויקט". ניתן גם לעקוב באתר מנהל התכנון או באתר העירייה (יהוד-מונוסון). אם אין תזוזה תוך 12 חודש, זה דגל אדום.' },
+  { id:'D3', cat:'developer', title:'קבלת לוח זמנים רשמי לבנייה',
+    desc:'יחויב כשיוגש ההיתר.',
+    due:'2027-Q1', urg:'med',   owner:'היזם',          dep:'D2',
+    cons:'בלי לוח, קשה לתכנן שכירות, חינוך, מעבר.', state:'open',
+    src:'developer',
+    srcDetail:'היזם נדרש לפרסם לוח זמנים של בנייה ומסירה לאחר קבלת היתר. עד אז — כל הערכה היא ספקולציה.' },
+  { id:'D4', cat:'developer', title:'מפרט טכני סופי',
+    desc:'לפני בחירת דירה.',
+    due:'2027-Q3',    urg:'low',   owner:'היזם',          dep:'D2',
+    cons:'הבנה חלקית של איכות הדירה.', state:'open',
+    src:'developer',
+    srcDetail:'מפרט טכני סופי מופץ לפי חוק המכר (דירות), בדרך כלל בשלב חוזה הרכישה.' },
+
+  // Documents
+  { id:'M1', cat:'docs',      title:'איסוף מסמכים אישיים לבנק',
+    desc:'תלושי שכר 3 חודשים, דוחות בנק 6 חודשים, ת״ז, דו״ח אשראי.',
+    due:'2026-06-01', urg:'high',  owner:'אני',           dep:null,
+    cons:'עיכוב באישור משכנתא.', state:'open',
+    src:'industry',
+    srcDetail:'דרישה סטנדרטית של בנקים בישראל. הנתונים תקפים ל-30–60 יום, אז עדיף להכין סמוך לפנייה.' },
+  { id:'M2', cat:'docs',      title:'תיוק מכתב הזכייה והנספחים',
+    desc:'במסך מסמכים.',
+    due:'2026-04-30', urg:'low',   owner:'אני',           dep:null,
+    cons:'אין סיכון — היגיינה.', state:'done',
+    src:'recommended', srcDetail:'מומלץ לשמור עותק דיגיטלי + נייר.' },
+  { id:'M3', cat:'docs',      title:'הורדה ושמירה של תקנון המכרז העדכני',
+    desc:'מאתר דירה בהנחה — תחת מספר מתחם 78396.',
+    due:'2026-05-15', urg:'low', owner:'אני', dep:null,
+    cons:'במחלוקת עתידית — חוסר מסמך הוא חיסרון.', state:'open',
+    src:'dira-moch',
+    srcDetail:'התקנון מתעדכן. שמירת עותק עם תאריך תאפשר להוכיח על איזה תקנון נכנסת לעסקה.' },
+
+  // Select
+  { id:'S1', cat:'select',    title:'הכנת קריטריונים לבחירת דירה',
+    desc:'קומה, כיוון, מספר חדרים, חניות, מחסן.',
+    due:'2027-Q2', urg:'med',   owner:'אני + בן/בת זוג',dep:null,
+    cons:'בחירה תחת לחץ ביום ה-X = החלטה לא אופטימלית ל-30 שנה.', state:'open',
+    src:'recommended',
+    srcDetail:'תהליך אישי. מומלץ להיכנס מוכן: רשימת "חובה / נחמד / לא רוצה". בפרויקטים גדולים יש לחץ זמן בבחירה.' },
+  { id:'S2', cat:'select',    title:'סיור באתר ובדירות לדוגמה',
+    desc:'כשייפתחו לציבור (אחרי תחילת בנייה).',
+    due:'2028-Q1', urg:'low',   owner:'אני',           dep:'D2',
+    cons:'תחושה חסרה של החלל בפועל.', state:'open',
+    src:'recommended', srcDetail:'דירה לדוגמה היא הדרך היחידה להבין באמת איך החלל מרגיש.' },
+
+  // Sign
+  { id:'C1', cat:'sign',      title:'בדיקת חוזה הרכישה לפני חתימה',
+    desc:'במלואו, על ידי עו״ד.',
+    due:'2028-Q1',    urg:'high',  owner:'עו״ד',           dep:'L1',
+    cons:'חתימה על תנאים חד-צדדיים שיקשו עליך בעתיד.', state:'open',
+    src:'industry',
+    srcDetail:'נוהג מקובל בענף וגם נקבע בחוק. עו״ד טוב מצליח להוריד 1–2% מהמחיר ע״י משא ומתן על סעיפי הצמדה ופיצוי.' },
+  { id:'C2', cat:'sign',      title:'הסדרת תשלום ראשון לפי החוזה',
+    desc:'בדרך כלל 7%-10% במעמד החתימה.',
+    due:'2028-Q1',    urg:'high',  owner:'אני',            dep:'B2',
+    cons:'פיגור = הפרת חוזה.', state:'open',
+    src:'industry',
+    srcDetail:'אחוז התשלום הראשון נקבע בחוזה — בדרך כלל בין 7% ל-15%. בנקים יבקשו חתימה על החוזה לפני אישור משכנתא סופי.' },
+
+  // Long term
+  { id:'X1', cat:'long',      title:'מעקב חודשי אחר התקדמות בנייה',
+    desc:'תמונות, ביקורי שטח, דוחות יזם.',
+    due:'2028-Q4',    urg:'low',   owner:'אני',            dep:'D2',
+    cons:'הפתעות במסירה.', state:'open',
+    src:'recommended', srcDetail:'בנייה מתחילה לרוב חצי שנה עד שנה אחרי קבלת היתר. עוקב פעם בחודש מספיק.' },
+  { id:'X2', cat:'long',      title:'תכנון מעבר ואכלוס',
+    desc:'הובלה, ריהוט, הכנת בית הספר לילדים.',
+    due:'2029-Q3',    urg:'low',   owner:'אני',            dep:'D2',
+    cons:'מתח גבוה במעבר אחרון.', state:'open',
+    src:'recommended', srcDetail:'מתחילים לתכנן 6 חודשים לפני המסירה.' }
+];
+
+/* ============== DATA: SCHOOLS / POI ============== */
+const poi = {
+  edu: [
+    { name:'בית-ספר רמז',         sub:'יסודי · ממלכתי',       dist:'הליכה 7 דק׳ · 550 מ׳',  rate:'דירוג חינוך 8.6/10' },
+    { name:'בית-ספר אלון',         sub:'יסודי · ממלכתי דתי',    dist:'הליכה 14 דק׳ · 1.1 ק״מ',rate:'דירוג חינוך 8.1/10' },
+    { name:'חטיבת ביניים אופק',    sub:'חטיבה · ממלכתי',        dist:'נסיעה 4 דק׳ · 1.8 ק״מ', rate:'דירוג חינוך 7.9/10' },
+    { name:'תיכון יהוד',           sub:'תיכון · 6 שנתי',        dist:'נסיעה 6 דק׳ · 2.3 ק״מ', rate:'אחוזי בגרות איכותית: 78%' },
+    { name:'גן עירוני "שקד"',      sub:'גני ילדים · 3-5',       dist:'הליכה 4 דק׳ · 320 מ׳', rate:'מבוקש' },
+    { name:'מעון שלימה',           sub:'מעון יום · 0-3',         dist:'הליכה 6 דק׳ · 480 מ׳', rate:'מסובסד' }
+  ],
+  life: [
+    { name:'קופ״ח כללית — סניף יהוד',  sub:'בריאות',          dist:'נסיעה 5 דק׳ · 2.1 ק״מ', rate:'24/7 מוקד' },
+    { name:'מרפאת מאוחדת',              sub:'בריאות',          dist:'הליכה 12 דק׳ · 950 מ׳', rate:'' },
+    { name:'קניון יהוד',                sub:'מרכז מסחרי',      dist:'נסיעה 6 דק׳ · 2.4 ק״מ', rate:'~80 חנויות' },
+    { name:'סופר רמי לוי',              sub:'סופרמרקט',         dist:'הליכה 10 דק׳ · 800 מ׳', rate:'' },
+    { name:'BIG פאשן יהוד',             sub:'מרכז קניות',       dist:'נסיעה 9 דק׳ · 4.2 ק״מ', rate:'' }
+  ],
+  transit: [
+    { name:'תחנת רכבת קריית-אריה',     sub:'רכבת ישראל',       dist:'נסיעה 12 דק׳ · 5.8 ק״מ',rate:'תל אביב 18 דק׳' },
+    { name:'תחנת אוטובוס מרכזית',      sub:'אוטובוסים בין-עירוניים',dist:'הליכה 5 דק׳ · 380 מ׳',  rate:'קווי מטרופולין' },
+    { name:'כניסה לכביש 461',           sub:'ציר תנועה',        dist:'נסיעה 3 דק׳ · 1.2 ק״מ', rate:'גישה לאיילון' },
+    { name:'תחנת מטרו עתידית (M3)',    sub:'תחבורה עתידית',     dist:'מתוכנן · ~1 ק״מ',         rate:'אופק 2030+' }
+  ],
+  park: [
+    { name:'פארק הסביונים',             sub:'פארק ירוק',        dist:'נסיעה 4 דק׳ · 2.0 ק״מ', rate:'אגם, מתקני ספורט' },
+    { name:'גינת השקד (שכונתית)',       sub:'גן ציבורי',         dist:'הליכה 3 דק׳ · 240 מ׳',  rate:'מתאים לפעוטות' },
+    { name:'גן לאומי אפק',               sub:'גן לאומי',         dist:'נסיעה 12 דק׳ · 7.5 ק״מ',rate:'טבע' },
+    { name:'מרכז ספורט יהוד',           sub:'בריכה + חוגים',    dist:'נסיעה 7 דק׳ · 3.1 ק״מ', rate:'בריכה אולימפית' }
+  ]
+};
+
+/* ============== DATA: MARKET ============== */
+const YAD2_BASE   = 'https://www.yad2.co.il/realestate/forsale';
+const MADLAN_BASE = 'https://www.madlan.co.il';
+
+const market = {
+  comps: [
+    { city:'ק\' הסביונים · הפרויקט', pps: 31200, delta:+0.9, fill: 75,  url: YAD2_BASE + '?city=2620&propertyType=1&rooms=4-5' },
+    { city:'יהוד · ותיק',             pps: 26900, delta:+0.4, fill: 60,  url: YAD2_BASE + '?city=2620' },
+    { city:'גני יהודה',               pps: 33700, delta:+0.9, fill: 86,  url: YAD2_BASE + '?city=8200' },
+    { city:'סביון',                   pps: 49500, delta:+1.4, fill: 100, url: YAD2_BASE + '?city=585' },
+    { city:'אור יהודה',               pps: 24300, delta:-0.2, fill: 50,  url: YAD2_BASE + '?city=370' },
+    { city:'קריית אונו',              pps: 32800, delta:+0.7, fill: 80,  url: YAD2_BASE + '?city=2710' },
+    { city:'פתח תקווה (סמוך)',        pps: 28100, delta:+0.5, fill: 65,  url: YAD2_BASE + '?city=7900' }
+  ],
+  trend: {
+    3:  [30850, 31040, 31200],
+    12: [29400, 29620, 29830, 30100, 30280, 30410, 30530, 30680, 30850, 30980, 31100, 31200],
+    24: [27900, 28140, 28380, 28640, 28890, 29080, 29260, 29400, 29620, 29830, 30100, 30280,
+         30410, 30530, 30680, 30850, 30980, 31100, 31200, 31280, 31250, 31200, 31200, 31200]
+  },
+  listings: [
+    { addr:'התמר 8, קריית הסביונים', rooms:'4 חדרים', size:'105 מ״ר', floor:'קומה 7/10', price:3290000, asking:'יקר',
+      url: YAD2_BASE + '?city=2620&neighborhood=1483&rooms=4', source:'יד2' },
+    { addr:'הברוש 22, ק\' הסביונים', rooms:'5 חדרים', size:'118 מ״ר', floor:'קומה 5/8',  price:3680000, asking:'מבוקש',
+      url: YAD2_BASE + '?city=2620&rooms=5', source:'יד2' },
+    { addr:'הזית 14, יהוד',          rooms:'4 חדרים', size:'97 מ״ר',  floor:'קומה 3/6',  price:2750000, asking:'אסמיק',
+      url: YAD2_BASE + '?city=2620&rooms=4', source:'יד2' },
+    { addr:'הדקלים 3, גני יהודה',    rooms:'5 חדרים', size:'128 מ״ר', floor:'קוטג׳',     price:4310000, asking:'יקר',
+      url: MADLAN_BASE + '/local/גני-יהודה', source:'מדלן' },
+    { addr:'דרך הים 47, סביון',      rooms:'6 חדרים', size:'180 מ״ר', floor:'קוטג׳ דו',  price:8910000, asking:'יוקרה',
+      url: MADLAN_BASE + '/local/סביון', source:'מדלן' }
+  ]
+};
+
+/* ============== DATA: NEWS / ARTICLES ============== */
+// Hand-curated article links + a search-by-keyword fallback.
+// Replace href values when you find better articles. The pattern is:
+// href = real article URL, or `searchUrl` to land on a search results page.
+const newsArticles = [
+  { source:'דירה בהנחה', date:'2025-11-17',
+    title:'הגרלת 2642 התקיימה — 118 דירות במחיר מטרה ביהוד',
+    snippet:'דירות בפרויקט אסיה סיירוס, מתחם 324 בקריית הסביונים, נמכרות ב-20,631 ₪/מ״ר לעומת 28,322 ₪/מ״ר מחיר שוק.',
+    url: 'https://www.dira.moch.gov.il' },
+  { source:'גלובס', date:'מתחדש',
+    title:'מחיר מטרה — איך התוכנית עובדת והאם היא משתלמת',
+    snippet:'סקירה מעמיקה של התוכנית, ההגבלות והתועלות.',
+    url: 'https://www.globes.co.il/news/home.aspx?fid=2&searchphr=מחיר+מטרה' },
+  { source:'TheMarker', date:'מתחדש',
+    title:'יהוד-מונוסון: שכונה מתפתחת בלב גוש דן',
+    snippet:'נכנסים פרויקטים חדשים, רכבת קלה מתוכננת, ומחירי הדירות ממשיכים לעלות בקצב מתון.',
+    url: 'https://www.themarker.com/realestate/?keyword=יהוד' },
+  { source:'כלכליסט', date:'מתחדש',
+    title:'מחיר מטרה: לאן הולכים מחירי השוק עד המסירה?',
+    snippet:'אנליסטים: ההטבה הריאלית מצטמצמת אם השוק עולה לאט והמדד נושך.',
+    url: 'https://www.calcalist.co.il/Ext/Comp/MainSearch/0,9128,L-3700,00.html?text=מחיר+מטרה' },
+  { source:'עיריית יהוד-מונוסון', date:'מתחדש',
+    title:'תוכנית אב לפיתוח עירוני — מסמכי תכנון',
+    snippet:'תוכניות בינוי ופיתוח באזור ק׳ הסביונים, צירי תנועה ושטחים פתוחים.',
+    url: 'https://www.yehud-monosson.muni.il' },
+  { source:'מנהל התכנון', date:'מתחדש',
+    title:'תיק מתחם 324 יהוד — סטטוס תכנון והיתרים',
+    snippet:'מעקב אחר הליכי תכנון ובקשות היתר במתחם הפרויקט.',
+    url: 'https://mavat.iplan.gov.il' }
+];
+
+/* ============== DATA: URBAN DEVELOPMENT ============== */
+const urbanDev = [
+  { kind:'transit', icon:'🚆',
+    name:'קו מטרו M3 (תוכנית מטרו ת״א)',
+    desc:'אחד מ-3 קווי המטרו המתוכננים בגוש דן. M3 מתוכנן לעבור באזור המזרחי של גוש דן ולקצר משמעותית את זמן הנסיעה לתל אביב.',
+    impact:'<strong>השפעה על מחירי הסביבה:</strong> פרויקטים סביב תחנות מטרו עתידיות נוטים לעלות 8–18% בעשור שעובר מההכרזה למסירה.',
+    status:'מאושר עקרונית · בתכנון מפורט',
+    eta:'הפעלה משוערת: 2032+',
+    url:'https://www.gov.il/he/departments/general/metro_main' },
+  { kind:'transit', icon:'🚊',
+    name:'קו סגול / מטרופולין — תח״צ עתירת נוסעים',
+    desc:'קווי תחבורה מתקדמת בין יהוד-מונוסון לתל אביב ופתח תקווה (BRT/קו סגול).',
+    impact:'<strong>השפעה:</strong> שיפור נגישות יומיומית = ביקוש גובר לדירות 4–5 חדרים באזור.',
+    status:'בתכנון · חלקים בביצוע',
+    eta:'2027–2030',
+    url:'https://www.nta.co.il' },
+  { kind:'road', icon:'🛣',
+    name:'הרחבת כביש 461 ושיפור צירי כניסה',
+    desc:'כביש 461 הוא ציר התנועה המרכזי המחבר את יהוד לאיילון ופתח תקווה. תוכניות הרחבה ושיפור צירי כניסה לעיר.',
+    impact:'<strong>השפעה:</strong> מקצר זמני נסיעה בעיקר בשעות העומס. פגיעה לטווח קצר בתנועה (עבודות בנייה).',
+    status:'תכנון · ביצוע חלקי',
+    eta:'2026–2028',
+    url:'https://www.iroads.co.il' },
+  { kind:'building', icon:'🏗',
+    name:'מתחמי בנייה חדשים סביב הפרויקט',
+    desc:'מספר מתחמים בק׳ הסביונים ובסביבה הקרובה במצבי תכנון/בנייה שונים — חלקם דירה בהנחה, חלקם פרטיים.',
+    impact:'<strong>השפעה:</strong> בטווח הקצר — לחץ על תשתיות והיצע עולה (מרסן עליות מחירים). בטווח הארוך — שכונה איכותית יותר.',
+    status:'מספר פרויקטים פעילים',
+    eta:'2026–2032',
+    url:'https://mavat.iplan.gov.il' },
+  { kind:'commerce', icon:'🛍',
+    name:'מרכז מסחרי / עסקי חדש — אזור התעשייה יהוד',
+    desc:'תכנון לחיזוק אזור התעסוקה והמסחר הסמוך, שיכלול שירותים ומקומות עבודה.',
+    impact:'<strong>השפעה:</strong> תעסוקה קרובה לבית = ביקוש לדירות גבוה יותר באזור.',
+    status:'בתכנון',
+    eta:'2027+',
+    url:'https://www.yehud-monosson.muni.il' },
+  { kind:'building', icon:'🏫',
+    name:'מוסדות חינוך נוספים בעיר',
+    desc:'יהוד-מונוסון מתכננת תוספת בתי ספר וגנים לאור הצמיחה הדמוגרפית. השפעה ישירה על משפחות בפרויקט.',
+    impact:'<strong>השפעה:</strong> פתרון לעומס בבתי הספר הקיימים — חיובי למשפחה שלך.',
+    status:'בתכנון · ביצוע מתמשך',
+    eta:'2026–2030',
+    url:'https://www.yehud-monosson.muni.il' }
+];
+
+/* ============== DATA: DOCS / Q / EVENTS / PRECHECKS ============== */
+const docs = [
+  { name:'מכתב זכייה רשמי · הגרלה 2642',  type:'pdf',      meta:'2.1 MB · 17.03.2026 · אומת' },
+  { name:'תקנון תוכנית מחיר מטרה (גרסה 14)', type:'pdf',  meta:'860 KB · 22.04.2026 · עדכני' },
+  { name:'הסכם זכאות — טיוטה',               type:'contract', meta:'1.4 MB · 02.04.2026 · בבדיקה' },
+  { name:'מפרט טכני ראשוני',                 type:'pdf',      meta:'4.8 MB · 11.04.2026' },
+  { name:'דוח שמאי לאזור (פרטי)',            type:'pdf',      meta:'1.2 MB · הוזמן' },
+  { name:'הערות אישיות — סיור 12.04',        type:'note',     meta:'נוצר במערכת · עודכן לפני שבוע' }
+];
+
+const openQuestions = [
+  { q:'האם תקופת איסור המכירה מתחילה מקבלת המפתח או מהחתימה?',         to:'עו״ד' },
+  { q:'מהן עלויות הצמדת המחיר למדד תשומות הבנייה — מקסימום שנתי?',     to:'יזם' },
+  { q:'האם ניתן להחליף בנקים לאחר מתן אישור משכנתא ראשוני?',           to:'בנק' },
+  { q:'מה תהליך בחירת חניות נוספות? עלות?',                             to:'יזם' },
+  { q:'האם יש אפשרות לשדרוגים פנימיים? עלות וטווח זמן להחלטה?',         to:'יזם' },
+  { q:'מתי מקבלים את לוח התשלומים המלא?',                                to:'יזם' }
+];
+
+const eventLog = [
+  { d:'2026-03-15', t:'התקבלה הודעה רשמית על זכייה בהגרלה 2642' },
+  { d:'2026-03-22', t:'נחתם טופס אישור זכאות ראשוני' },
+  { d:'2026-04-02', t:'התקבלה טיוטת הסכם זכאות' },
+  { d:'2026-04-12', t:'סיור ראשון באזור הפרויקט' },
+  { d:'2026-04-21', t:'נקבעה פגישת ייעוץ משכנתא ל-12.06' },
+  { d:'2026-04-22', t:'התקבל עדכון תקנון — סעיף 14' }
+];
+
+const prechecks = [
+  { title:'לפני בחירת עו״ד', items:['ניסיון בתוכנית דירה בהנחה ספציפית','בדיקת המלצות מ-3 לקוחות עבר','שכר טרחה מובהר ומאושר בכתב','זמני זמינות לפגישות ושיחות'] },
+  { title:'לפני אישור משכנתא', items:['השוואת מינימום 3 בנקים','בדיקת תמהיל מותאם לתרחיש שלך','בירור זכאות לסבסוד ריבית','חישוב יחס החזר חודשי / הכנסה'] },
+  { title:'לפני חתימת חוזה רכישה', items:['בדיקת לוח תשלומים','סעיף הצמדה למדד תשומות','בדיקת אחריות והתחייבויות יזם','סעיפי ביטול ופיצוי','בדיקת חניות, מחסן, מרפסת'] }
+];
+
+/* ============== DATA: SCORES ============== */
+const scores = [
+  { id:'health', name:'Project Health', value: 74,
+    desc:'מצב הפרויקט הכולל — האם הוא בנתיב תקין מבחינת אבני דרך, רגולציה והתנהלות יזם.',
+    color:'success',
+    up:['היזם בעל היסטוריה תקינה','אבני דרך עומדות בלוח זמנים','אישורים תכנוניים בתוקף'],
+    dn:['פרסום עדכון תקנון יוצר אי-ודאות','עיכוב קל בקבלת מפרט טכני סופי']
+  },
+  { id:'opp', name:'Opportunity Score', value: 81,
+    desc:'הפוטנציאל הכלכלי של ההזדמנות — שילוב של ההטבה, מגמות שוק וביקוש באזור.',
+    color:'success',
+    up:['פער 37% מתחת לשוק','שכונות סמוכות ביוקרה גבוהה (סביון/גני יהודה)','תחנת רכבת קרובה'],
+    dn:['שוק מקומי הוקרר מעט','ימי שיווק עלו']
+  },
+  { id:'family', name:'Family Fit', value: 83,
+    desc:'התאמה למשפחה — חינוך, פנאי, גישה, איכות סביבה.',
+    color:'success',
+    up:['בתי ספר ברמה גבוהה ב-1 ק״מ','פארק שכונתי בהליכה','גישה נוחה לתחבורה ציבורית'],
+    dn:['רעש מסוים מקו הרכבת','עומס בנייה בשנים הקרובות']
+  },
+  { id:'market', name:'Market Attractiveness', value: 68,
+    desc:'אטרקטיביות שוק הנדל״ן באזור — מגמות, נזילות, תנודתיות.',
+    color:'warning',
+    up:['ביקוש יציב לדירות 4-5 חדרים','קרבה לסביון/גני יהודה (יוקרה)'],
+    dn:['ימי שיווק 52 (מעל ממוצע)','עליית מחירים מתמתנת','היצע בנייה גובר ב-3 שנים הקרובות']
+  },
+  { id:'delay', name:'Delay Risk', value: 38, invert:true,
+    desc:'סיכון לעיכוב במסירה — ככל שהציון נמוך יותר, כך טוב יותר.',
+    color:'warning',
+    up:['קצב בנייה תקין נכון להיום','אישורי בנייה בתוקף'],
+    dn:['רגישות למדד תשומות','פוטנציאל עיכוב רגולטורי בוועדה המקומית','תלות בהתנהלות עו״ד הפרויקט']
+  },
+  { id:'budget', name:'Budget Pressure', value: 44, invert:true,
+    desc:'לחץ תקציבי משוער — יחס בין ההון העצמי לדרישות התשלום.',
+    color:'warning',
+    up:['תקציב הוגדר עם רזרבה של 5%','אישור משכנתא עקרוני בתהליך'],
+    dn:['חשיפה למדד תשומות הבנייה','עלויות שדרוג עתידיות','החזר חודשי משוער 26% מהשכר']
+  }
+];
+
+/* ============== STATE ============== */
+const state = {
+  route: 'dashboard',
+  scenario: 'base',
+  size: 90,
+  taskFilter: 'all',
+  trendPeriod: 3,
+  charts: {},
+  map: null,
+  uploads: JSON.parse(localStorage.getItem('dira_uploads') || '[]'),
+  attachments: JSON.parse(localStorage.getItem('dira_attachments') || '{}')
+};
+
+const COSTS = {
+  con: [
+    { item:'שכ״ט עו״ד', d:'1.5% מהמחיר',    pct: 0.015 },
+    { item:'משכנתא — עמלות פתיחה ויעוץ', d:'אומדן',  fixed: 12000 },
+    { item:'מדד תשומות הבנייה', d:'4% עד מסירה',     pct: 0.04 },
+    { item:'שדרוגים פנימיים', d:'מטבח + פרקט',         fixed: 70000 },
+    { item:'ריהוט והובלה', d:'ראשוני',                 fixed: 80000 },
+    { item:'רזרבה לבטיחות', d:'2.5%',                  pct: 0.025 }
+  ],
+  base: [
+    { item:'שכ״ט עו״ד', d:'1.2% מהמחיר',    pct: 0.012 },
+    { item:'משכנתא — עמלות פתיחה ויעוץ', d:'אומדן',   fixed: 9000 },
+    { item:'מדד תשומות הבנייה', d:'2.5% עד מסירה',    pct: 0.025 },
+    { item:'שדרוגים פנימיים', d:'מטבח + פרקט',         fixed: 50000 },
+    { item:'ריהוט והובלה', d:'בסיס',                   fixed: 55000 },
+    { item:'רזרבה לבטיחות', d:'2%',                    pct: 0.02 }
+  ],
+  opt: [
+    { item:'שכ״ט עו״ד', d:'1% מהמחיר',      pct: 0.01 },
+    { item:'משכנתא — עמלות פתיחה ויעוץ', d:'מינימום', fixed: 6500 },
+    { item:'מדד תשומות הבנייה', d:'1.5% עד מסירה',    pct: 0.015 },
+    { item:'שדרוגים פנימיים', d:'בסיסי',               fixed: 30000 },
+    { item:'ריהוט והובלה', d:'מינימום',                fixed: 35000 },
+    { item:'רזרבה לבטיחות', d:'1.5%',                  pct: 0.015 }
+  ]
+};
+
+/* ============== ROUTER ============== */
+function goto(route){
+  state.route = route;
+  els('.screen').forEach(s => s.classList.toggle('active', s.dataset.screen === route));
+  els('.rail-link').forEach(l => l.classList.toggle('active', l.dataset.route === route));
+  els('.mt-link').forEach(l => l.classList.toggle('active', l.dataset.route === route));
+  const titles = {
+    dashboard: ['דשבורד · תמונת מצב', 'סקירה כוללת של מצב הפרויקט והפעולות הדרושות'],
+    tasks:     ['משימות', 'checklist חכם לפי קטגוריה'],
+    finance:   ['כדאיות פיננסית', 'חישוב חי של ההטבה ועלויות'],
+    area:      ['אזור ואיכות חיים', 'סביבת הפרויקט מנקודת מבט משפחתית'],
+    market:    ['מודיעין שוק', 'נתונים, מגמות והשוואות'],
+    docs:      ['מסמכים וידע', 'knowledge hub אישי'],
+    scores:    ['Health & Opportunity', 'מדדי ה-Intelligence של המערכת']
+  };
+  el('#screen-title').textContent = titles[route][0];
+  el('#screen-sub').textContent = titles[route][1];
+  history.replaceState(null, '', '#' + route);
+  // re-render charts / map that may have been hidden
+  if (route === 'finance') renderPriceChart();
+  if (route === 'market')  renderTrendChart();
+  if (route === 'area'){
+    initMap();
+    if (state.map) setTimeout(() => state.map.invalidateSize(), 100);
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.goto = goto;
+
+/* ============== COPY FILE PATH (for transfer to phone) ============== */
+function copyFilePath(){
+  const path = '/Users/netanel/Dira/dira-yehud-dashboard.html';
+  const btn = document.getElementById('copy-path-btn');
+  const original = btn ? btn.textContent : '';
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = path; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+  };
+  const done = () => {
+    if (!btn) return;
+    btn.textContent = '✓ הנתיב הועתק';
+    setTimeout(() => { btn.textContent = original; }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(path).then(done).catch(() => { fallback(); done(); });
+  } else {
+    fallback(); done();
+  }
+}
+window.copyFilePath = copyFilePath;
+
+/* ============== RENDER: TIMELINE ============== */
+function renderTimeline(){
+  const wrap = el('#timeline');
+  wrap.innerHTML = milestones.map(m => `
+    <div class="tl-step ${m.status}">
+      <div class="ph">${m.phase}</div>
+      <div class="nm">${m.name}</div>
+      <div class="dt">${m.date}</div>
+    </div>`).join('');
+}
+
+/* ============== RENDER: ALERTS / CHANGELOG ============== */
+function renderAlerts(){
+  el('#alerts-list').innerHTML = alerts.map(a => {
+    const cls = a.type === 'warn' ? 'warn' : a.type === 'crit' ? 'crit' : 'info';
+    const ico = a.type === 'crit' ? '!' : a.type === 'warn' ? '⚠' : 'i';
+    return `
+      <div class="alert">
+        <div class="ai ${cls}">${ico}</div>
+        <div style="flex:1">
+          <h4>${a.title}</h4>
+          <p>${a.body}</p>
+          <div class="at">${a.time}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderChangelog(){
+  el('#changelog').innerHTML = changelog.map(c => {
+    const ic = c.type === 'up' ? '↑' : c.type === 'down' ? '↓' : '⚑';
+    return `
+      <div class="change-row">
+        <span class="ic ${c.type}">${ic}</span>
+        <span>${c.text}</span>
+        <span class="when">${c.when}</span>
+      </div>`;
+  }).join('');
+}
+
+/* ============== RENDER: SCORE SNAPSHOT ============== */
+function donutSVG(value, color, invert=false){
+  // value 0..100, render arc
+  const display = invert ? (100 - value) : value;
+  const r = 56, c = 2 * Math.PI * r;
+  const dash = (value/100) * c;
+  const stroke = color === 'success' ? '#1F7A4D' : color === 'warning' ? '#B07208' : color === 'critical' ? '#A8313A' : '#1F5FA8';
+  return `
+  <svg width="140" height="140" viewBox="0 0 140 140">
+    <circle cx="70" cy="70" r="${r}" fill="none" stroke="#EEF1F6" stroke-width="12"/>
+    <circle cx="70" cy="70" r="${r}" fill="none" stroke="${stroke}" stroke-width="12"
+            stroke-dasharray="${dash} ${c}" stroke-linecap="round"/>
+  </svg>
+  <div class="lbl"><div class="num">${invert ? value : value}</div><div class="of">/ 100</div></div>`;
+}
+
+function renderScoreSnapshot(){
+  const top = scores.slice(0,3);
+  el('#score-snapshot').innerHTML = top.map(s => `
+    <div class="card" style="display:flex; gap: var(--s-3); align-items: center;">
+      <div class="donut">${donutSVG(s.value, s.color, s.invert)}</div>
+      <div style="flex:1">
+        <div class="muted" style="font-size:12px;">${s.name}</div>
+        <strong style="font-size:15px;">${scoreLabel(s)}</strong>
+        <div class="muted" style="font-size:12px; margin-top:4px;">${s.desc.split('—')[0]}</div>
+      </div>
+    </div>`).join('');
+}
+
+function scoreLabel(s){
+  const v = s.invert ? 100 - s.value : s.value;
+  if (v >= 80) return 'מצוין';
+  if (v >= 65) return 'טוב';
+  if (v >= 50) return 'סביר';
+  return 'דורש תשומת לב';
+}
+
+/* ============== RENDER: TASKS ============== */
+function renderTaskTabs(){
+  const counts = {};
+  taskCategories.forEach(c => {
+    counts[c.id] = c.id === 'all' ? tasks.length : tasks.filter(t => t.cat === c.id).length;
+  });
+  el('#task-tabs').innerHTML = taskCategories.map(c => `
+    <button class="tab ${c.id === state.taskFilter ? 'active' : ''}" data-tab="${c.id}">
+      <span>${c.icon}</span><span>${c.label}</span>
+      <span class="ct">${counts[c.id]}</span>
+    </button>`).join('');
+  els('#task-tabs .tab').forEach(b => b.addEventListener('click', () => {
+    state.taskFilter = b.dataset.tab;
+    renderTaskTabs();
+    renderTaskList();
+  }));
+}
+
+function renderTaskList(){
+  const list = state.taskFilter === 'all' ? tasks : tasks.filter(t => t.cat === state.taskFilter);
+  el('#task-list').innerHTML = list.map(t => {
+    const urgPill = t.urg === 'high' ? 'critical dot' : t.urg === 'med' ? 'warning dot' : '';
+    const urgLabel = t.urg === 'high' ? 'דחיפות גבוהה' : t.urg === 'med' ? 'דחיפות בינונית' : 'דחיפות נמוכה';
+    const catObj = taskCategories.find(c => c.id === t.cat) || { label:'', icon:'•' };
+    const src = t.src ? SOURCES[t.src] : null;
+    const srcBadge = src ? `<button class="src-btn ${src.conf}" onclick="openTaskSrc('${t.id}')" title="מקור המידע">?</button>` : '';
+    const attachments = (state.attachments[t.id] || []).map(a => `
+      <span class="attach">📎 ${a.name} <button class="x" onclick="removeAttach('${t.id}','${a.id}')">×</button></span>
+    `).join('');
+    return `
+    <div class="task" data-state="${t.state}" data-urg="${t.urg}" data-id="${t.id}">
+      <div class="urg"></div>
+      <div class="checkbox" onclick="toggleTask('${t.id}')">${t.state === 'done' ? '✓' : ''}</div>
+      <div class="body">
+        <div class="t-title">${srcBadge}${t.title}</div>
+        <div class="t-desc">${t.desc}</div>
+        <div class="t-meta">
+          <span class="pill">${catObj.icon} ${catObj.label}</span>
+          <span class="pill ${urgPill}">${urgLabel}</span>
+          <span class="pill">📅 ${t.due}</span>
+          <span class="pill">${t.owner}</span>
+          ${t.dep ? `<span class="pill">↳ תלוי ב-${t.dep}</span>` : ''}
+          ${src ? `<span class="pill ${src.conf === 'official' ? 'success' : src.conf === 'industry' ? 'brand' : 'warning'} dot">${src.conf === 'official' ? 'מקור רשמי' : src.conf === 'industry' ? 'נוהג ענפי' : 'המלצה'}</span>` : ''}
+        </div>
+        ${attachments ? `<div style="margin-top: 8px;">${attachments}</div>` : ''}
+        ${t.cons && t.state !== 'done' ? `<div class="t-conseq"><strong>אם לא יטופל בזמן:</strong> ${t.cons}</div>` : ''}
+      </div>
+      <div class="actions">
+        <label class="btn ghost" title="הוסף קובץ" style="cursor:pointer;">
+          📎<input type="file" style="display:none" onchange="attachToTask('${t.id}', this)">
+        </label>
+      </div>
+    </div>`;
+  }).join('');
+  renderTaskKpis();
+  el('#rail-tasks-ct').textContent = tasks.filter(t => t.state !== 'done').length;
+}
+
+function renderTaskKpis(){
+  const total = tasks.length;
+  const done = tasks.filter(t => t.state === 'done').length;
+  const urg = tasks.filter(t => t.state !== 'done' && t.urg === 'high').length;
+  const now30 = tasks.filter(t => {
+    if (t.state === 'done') return false;
+    const due = new Date(t.due);
+    if (isNaN(due)) return false;
+    const days = (due - new Date())/86400000;
+    return days >= 0 && days <= 30;
+  }).length;
+  const set = (id, val, max) => {
+    el('#'+id).textContent = val + (max ? ' / ' + max : '');
+  };
+  set('t-total', total);
+  el('#t-total-bar').style.width = ((done/total)*100).toFixed(1) + '%';
+  set('t-urgent', urg);
+  el('#t-urg-bar').style.width = ((urg/total)*100).toFixed(1) + '%';
+  set('t-30', now30);
+  el('#t-30-bar').style.width = ((now30/total)*100).toFixed(1) + '%';
+  set('t-done', done);
+  el('#t-done-bar').style.width = ((done/total)*100).toFixed(1) + '%';
+}
+
+window.toggleTask = function(id){
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.state = t.state === 'done' ? 'open' : 'done';
+  renderTaskList();
+};
+
+/* ============== SOURCE MODAL ============== */
+function openModal({ title, body, conf, footer }){
+  el('#src-modal-title').textContent = title;
+  el('#src-modal-body').innerHTML = body;
+  const confEl = el('#src-modal-conf');
+  confEl.className = 'src-conf ' + (conf || 'industry');
+  confEl.textContent = conf === 'official' ? 'מקור רשמי' : conf === 'industry' ? 'נוהג בענף' : 'המלצה';
+  el('#src-modal-foot-left').innerHTML = footer || '—';
+  el('#src-modal').classList.add('open');
+}
+function closeModal(){ el('#src-modal').classList.remove('open'); }
+window.closeModal = closeModal;
+
+window.openTaskSrc = function(id){
+  const t = tasks.find(x => x.id === id); if (!t) return;
+  const src = SOURCES[t.src] || { conf:'industry', name:'—', url:null };
+  const urlHtml = src.url
+    ? `<a href="${src.url}" target="_blank" class="ext">${src.name}</a>`
+    : `<span class="muted">${src.name}</span>`;
+  const body = `
+    <p><strong>איך הגיעה משימה זו לרשימה:</strong></p>
+    <p>${t.srcDetail || 'מקור לא תועד.'}</p>
+    <p style="margin-top: 16px; padding: 10px; background: var(--surface-2); border-radius: 8px;">
+      <strong>מקור:</strong> ${urlHtml}
+    </p>`;
+  openModal({ title: t.title, body, conf: src.conf, footer: `מזהה משימה: ${t.id} · קטגוריה: ${t.cat}` });
+};
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ============== UPLOADS ============== */
+function persistUploads(){
+  localStorage.setItem('dira_uploads', JSON.stringify(state.uploads));
+  localStorage.setItem('dira_attachments', JSON.stringify(state.attachments));
+}
+
+function readFileMeta(file){
+  return {
+    id: 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    name: file.name,
+    size: file.size,
+    type: file.type || 'application/octet-stream',
+    date: new Date().toISOString(),
+    // suggested local path (for the user to manually copy if desired)
+    suggestedPath: '/Users/netanel/Dira/dira-uploads/' + file.name
+  };
+}
+
+window.handleDocUpload = function(input){
+  const files = [...input.files];
+  files.forEach(f => state.uploads.push(readFileMeta(f)));
+  persistUploads();
+  renderDocs();
+  input.value = '';
+};
+
+window.attachToTask = function(taskId, input){
+  const f = input.files[0]; if (!f) return;
+  state.attachments[taskId] = state.attachments[taskId] || [];
+  state.attachments[taskId].push(readFileMeta(f));
+  persistUploads();
+  renderTaskList();
+  input.value = '';
+};
+
+window.removeAttach = function(taskId, attachId){
+  if (!state.attachments[taskId]) return;
+  state.attachments[taskId] = state.attachments[taskId].filter(a => a.id !== attachId);
+  persistUploads();
+  renderTaskList();
+};
+
+window.removeUpload = function(uploadId){
+  state.uploads = state.uploads.filter(u => u.id !== uploadId);
+  persistUploads();
+  renderDocs();
+};
+
+/* ============== LEAFLET MAP ============== */
+function initMap(){
+  const container = el('#real-map');
+  if (!container || state.map) return;
+  if (typeof L === 'undefined') return;
+
+  const center = [project.geo.lat, project.geo.lng];
+  state.map = L.map(container, { zoomControl: true, scrollWheelZoom: false }).setView(center, 15);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(state.map);
+
+  // Project marker (the "you" pin)
+  const youIcon = L.divIcon({
+    className: 'leaflet-you',
+    html: '<div style="width:22px;height:22px;border-radius:50%;background:#B08A4F;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4);"></div>',
+    iconSize: [22,22], iconAnchor: [11,11]
+  });
+  L.marker(center, { icon: youIcon })
+    .addTo(state.map)
+    .bindPopup('<strong>הפרויקט שלך</strong><br>גב\' אויה / קריית הסביונים<br>אסיה סיירוס · מתחם 324');
+
+  // POI markers (approximate offsets — illustrative, not surveyed)
+  const POI_MARKERS = [
+    { lat: 32.0339, lng: 34.8895, name:'בית-ספר רמז',         color:'#92400E', kind:'חינוך' },
+    { lat: 32.0345, lng: 34.8932, name:'גן עירוני "שקד"',      color:'#166534', kind:'גן' },
+    { lat: 32.0301, lng: 34.8950, name:'קופ״ח כללית — יהוד',   color:'#991B1B', kind:'בריאות' },
+    { lat: 32.0285, lng: 34.8870, name:'תחנת רכבת קריית-אריה', color:'#1E40AF', kind:'תחבורה' },
+    { lat: 32.0298, lng: 34.8908, name:'קניון יהוד',           color:'#6B21A8', kind:'קניות' },
+    { lat: 32.0356, lng: 34.8941, name:'פארק הסביונים',        color:'#166534', kind:'פארק' },
+    { lat: 32.0312, lng: 34.8895, name:'תיכון יהוד',           color:'#92400E', kind:'חינוך' }
+  ];
+
+  POI_MARKERS.forEach(p => {
+    const icon = L.divIcon({
+      className: 'leaflet-poi',
+      html: `<div style="width:14px;height:14px;border-radius:50%;background:${p.color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);"></div>`,
+      iconSize: [14,14], iconAnchor: [7,7]
+    });
+    L.marker([p.lat, p.lng], { icon })
+      .addTo(state.map)
+      .bindPopup(`<strong>${p.name}</strong><br><span style="color:#666;">${p.kind}</span>`);
+  });
+
+  // Fix sizing after CSS settles
+  setTimeout(() => state.map && state.map.invalidateSize(), 200);
+}
+
+/* ============== NEWS / URBAN DEVELOPMENT ============== */
+function renderNews(){
+  const wrap = el('#news-grid'); if (!wrap) return;
+  wrap.innerHTML = newsArticles.map(n => `
+    <a class="news-card" href="${n.url}" target="_blank" rel="noopener">
+      <div class="news-meta">
+        <span class="news-source">${n.source}</span>
+        <span>${n.date}</span>
+      </div>
+      <div class="news-title">${n.title}</div>
+      <div class="news-snippet">${n.snippet}</div>
+      <div class="news-link ext">קרא במקור</div>
+    </a>`).join('');
+}
+
+function renderUrbanDev(){
+  const wrap = el('#urban-dev'); if (!wrap) return;
+  wrap.innerHTML = urbanDev.map(d => `
+    <div class="dev-card">
+      <div class="dev-ic ${d.kind}">${d.icon}</div>
+      <div>
+        <div class="dev-name">${d.name}</div>
+        <div class="dev-desc">${d.desc}</div>
+        <div class="dev-impact">${d.impact}</div>
+        <a class="dev-link ext" href="${d.url}" target="_blank">מעקב במקור</a>
+      </div>
+      <div class="dev-status">
+        <span class="pill brand">${d.status}</span>
+        <span class="muted">${d.eta}</span>
+      </div>
+    </div>`).join('');
+}
+
+/* ============== RENDER: FINANCE ============== */
+function calcBenefit(size){
+  const win = size * project.pricePerSqmWin;
+  const mkt = size * project.pricePerSqmMarket;
+  const save = mkt - win;
+  const pct = save / mkt;
+  return { win, mkt, save, pct };
+}
+
+function renderBenefitCard(){
+  const { win, mkt, save, pct } = calcBenefit(state.size);
+  el('#ben-total').textContent = fmt.num(save);
+  el('#ben-pct').textContent = (pct*100).toFixed(1) + '%';
+  el('#ben-size').textContent = state.size;
+  el('#sim-win').textContent = fmt.num(win);
+  el('#sim-mkt').textContent = fmt.num(mkt);
+  el('#sim-save').textContent = fmt.num(save);
+  el('#size-val').textContent = state.size;
+}
+
+function renderCostTable(){
+  const { win, save } = calcBenefit(state.size);
+  const items = COSTS[state.scenario];
+  let total = 0;
+  const tbody = items.map(i => {
+    const amount = i.fixed != null ? i.fixed : (i.pct * win);
+    total += amount;
+    return `<tr>
+      <td><strong>${i.item}</strong></td>
+      <td class="muted">${i.d}</td>
+      <td class="num">${fmt.nis(amount)}</td>
+    </tr>`;
+  }).join('');
+  el('#cost-table tbody').innerHTML = tbody + `
+    <tr class="total">
+      <td>סה״כ עלויות נלוות</td>
+      <td class="muted">תרחיש ${state.scenario === 'con' ? 'שמרני' : state.scenario === 'opt' ? 'אופטימי' : 'בסיס'}</td>
+      <td class="num">${fmt.nis(total)}</td>
+    </tr>`;
+  const net = save - total;
+  el('#net-benefit').textContent = fmt.nis(net);
+  el('#costs-pct').textContent = (total / win * 100).toFixed(1) + '%';
+}
+
+function renderPriceChart(){
+  const ctx = el('#chart-price'); if (!ctx) return;
+  if (state.charts.price) state.charts.price.destroy();
+  const data = market.trend[24];
+  const labels = data.map((_,i) => `M-${24-i}`);
+  state.charts.price = new Chart(ctx, {
+    type:'line',
+    data:{ labels, datasets:[
+      { label:'מחיר מ״ר · ק\' הסביונים', data, borderColor:'#1F5FA8', backgroundColor:'rgba(31,95,168,0.08)', fill:true, tension:.35, pointRadius:0, borderWidth:2 },
+      { label:'מחיר זכייה', data: data.map(() => project.pricePerSqmWin), borderColor:'#1F7A4D', borderDash:[4,4], pointRadius:0, borderWidth:1.5 }
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:true, labels:{ font:{ family:'Heebo', size:11 } } } },
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{ family:'Heebo', size:10 }, color:'#9AA3B8', maxRotation:0, autoSkip:true } },
+        y:{ grid:{ color:'#EEF1F6' }, ticks:{ font:{ family:'Heebo', size:10 }, color:'#9AA3B8', callback:(v)=> fmt.short(v) } }
+      }
+    }
+  });
+}
+
+/* ============== RENDER: AREA ============== */
+function renderPOI(){
+  const fill = (id, arr) => {
+    const cls = id === 'poi-edu' ? ['school','gan','school','school','gan','gan'] :
+                id === 'poi-life' ? ['health','health','shop','shop','shop'] :
+                id === 'poi-transit' ? ['transit','transit','transit','transit'] :
+                ['park','park','park','park'];
+    el('#'+id).innerHTML = arr.map((p,i) => `
+      <div class="poi">
+        <div class="poi-ic ${cls[i] || ''}">${cls[i] === 'school' ? '🎓' : cls[i] === 'gan' ? '🌳' : cls[i] === 'health' ? '✚' : cls[i] === 'shop' ? '◇' : cls[i] === 'transit' ? '⇆' : '☘'}</div>
+        <div>
+          <div class="poi-name">${p.name}</div>
+          <div class="poi-sub">${p.sub}${p.rate ? ' · ' + p.rate : ''}</div>
+        </div>
+        <div class="poi-dist">${p.dist}</div>
+      </div>`).join('');
+  };
+  fill('poi-edu',     poi.edu);
+  fill('poi-life',    poi.life);
+  fill('poi-transit', poi.transit);
+  fill('poi-park',    poi.park);
+
+  // donut
+  const d = el('.donut[data-score]');
+  if (d){
+    const s = +d.dataset.score;
+    const c = d.dataset.color;
+    d.innerHTML = donutSVG(s, c);
+  }
+}
+
+/* ============== RENDER: MARKET ============== */
+function renderComps(){
+  const max = Math.max(...market.comps.map(c => c.pps));
+  el('#comp-grid').innerHTML = market.comps.map(c => `
+    <a class="comp" href="${c.url}" target="_blank" rel="noopener" style="text-decoration:none; color:inherit;">
+      <div class="city">${c.city} <span class="ext"></span></div>
+      <div class="pps">₪ ${fmt.num(c.pps)}</div>
+      <div class="delta ${c.delta >= 0 ? 'up' : 'dn'}">${c.delta >= 0 ? '▲' : '▼'} ${Math.abs(c.delta)}% / ר׳</div>
+      <div class="bar"><div style="width:${(c.pps/max*100).toFixed(0)}%"></div></div>
+    </a>`).join('');
+}
+
+function renderListings(){
+  el('#listings').innerHTML = market.listings.map(l => `
+    <a class="listing" href="${l.url}" target="_blank" rel="noopener" style="text-decoration:none; color: inherit;">
+      <div class="thumb">⌂</div>
+      <div class="body">
+        <div class="addr">${l.addr} <span class="ext"></span></div>
+        <div class="specs">${l.rooms} · ${l.size} · ${l.floor} · ${l.asking} · <span class="muted">${l.source}</span></div>
+      </div>
+      <div>
+        <div class="price">${fmt.nis(l.price)}</div>
+        <div class="pps">${fmt.nis(l.price / parseInt(l.size))}/מ״ר</div>
+      </div>
+    </a>`).join('');
+}
+
+function renderTrendChart(){
+  const ctx = el('#chart-trend'); if (!ctx) return;
+  if (state.charts.trend) state.charts.trend.destroy();
+  const data = market.trend[state.trendPeriod];
+  const labels = data.map((_,i) => `${data.length-i}m`);
+  state.charts.trend = new Chart(ctx, {
+    type:'line',
+    data:{ labels, datasets:[
+      { label:'ק\' הסביונים', data, borderColor:'#1F5FA8', backgroundColor:'rgba(31,95,168,0.08)', fill:true, tension:.3, pointRadius:0, borderWidth:2 },
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{ family:'Heebo', size:10 }, color:'#9AA3B8', maxRotation:0, autoSkip:true, maxTicksLimit:8 } },
+        y:{ grid:{ color:'#EEF1F6' }, ticks:{ font:{ family:'Heebo', size:10 }, color:'#9AA3B8', callback:(v)=> fmt.short(v) } }
+      }
+    }
+  });
+}
+
+/* ============== RENDER: DOCS ============== */
+function renderDocs(){
+  const typeLabel = (t) => t === 'pdf' ? 'PDF' : t === 'contract' ? 'חוזה' : 'הערה';
+  const seedHtml = docs.map(d => `
+    <div class="doc-row">
+      <div class="doc-ic ${d.type}">${typeLabel(d.type)}</div>
+      <div style="flex:1">
+        <div class="doc-name">${d.name}</div>
+        <div class="doc-meta">${d.meta} · <span class="muted">דוגמה</span></div>
+      </div>
+    </div>`).join('');
+
+  // Add user-uploaded files
+  const uploadedHtml = state.uploads.map(u => {
+    const ext = (u.name.split('.').pop() || 'file').toLowerCase();
+    const cls = ['pdf'].includes(ext) ? 'pdf' : ['doc','docx'].includes(ext) ? 'contract' : 'note';
+    const sizeKb = (u.size / 1024).toFixed(0);
+    return `
+    <div class="doc-row">
+      <div class="doc-ic ${cls}">${ext.toUpperCase().slice(0,4)}</div>
+      <div style="flex:1">
+        <div class="doc-name">${u.name}</div>
+        <div class="doc-meta">${sizeKb} KB · ${fmt.date(u.date)} · <span style="color: var(--success);">הועלה</span> · <span class="muted">שמור ל-<code>${u.suggestedPath}</code></span></div>
+      </div>
+      <button class="btn ghost danger" onclick="removeUpload('${u.id}')">הסר</button>
+    </div>`;
+  }).join('');
+
+  el('#docs-list').innerHTML = uploadedHtml + (uploadedHtml ? '<div class="h-divider"></div>' : '') + seedHtml;
+
+  el('#q-list').innerHTML = openQuestions.map((q,i) => `
+    <div class="poi" style="border-bottom:1px dashed var(--line); padding: 10px 0;">
+      <div style="width:24px; height:24px; border-radius:50%; background:var(--brand-soft); color:var(--brand-2); font-weight:700; display:flex; align-items:center; justify-content:center; font-size: 11px;">${i+1}</div>
+      <div style="flex:1">
+        <div style="font-weight:500; font-size:13px;">${q.q}</div>
+      </div>
+      <span class="pill brand">${q.to}</span>
+    </div>`).join('');
+
+  el('#event-log').innerHTML = eventLog.map(e => `
+    <div class="change-row">
+      <span class="ic">📌</span>
+      <span style="font-size:13px;">${e.t}</span>
+      <span class="when">${fmt.date(e.d)}</span>
+    </div>`).join('');
+
+  el('#precheck-list').innerHTML = prechecks.map(p => `
+    <details style="margin-bottom: var(--s-3);">
+      <summary style="cursor:pointer; font-weight:600; font-size:13px; padding: 8px; background: var(--surface-3); border-radius: 8px; list-style:none;">▸ ${p.title}</summary>
+      <ul style="margin: 8px 0 0; padding-right: 24px; font-size: 13px; color: var(--ink-2);">
+        ${p.items.map(i => `<li style="margin-bottom: 4px;">${i}</li>`).join('')}
+      </ul>
+    </details>`).join('');
+
+  // Notes — local persistence
+  const txt = el('#notes-area');
+  const stat = el('#notes-status');
+  txt.value = localStorage.getItem('dira_notes') || '';
+  if (txt.value) stat.textContent = 'נטען מהשמירה האחרונה';
+  let timer;
+  txt.addEventListener('input', () => {
+    clearTimeout(timer);
+    stat.textContent = 'מקליד...';
+    timer = setTimeout(() => {
+      localStorage.setItem('dira_notes', txt.value);
+      stat.textContent = 'נשמר אוטומטית · ' + new Date().toLocaleTimeString('he-IL');
+    }, 600);
+  });
+}
+
+/* ============== RENDER: SCORES ============== */
+function renderScores(){
+  el('#scores-list').innerHTML = scores.map(s => {
+    const display = s.invert ? 100 - s.value : s.value;
+    const colorCls = display >= 70 ? 'success' : display >= 50 ? 'warning' : 'critical';
+    return `
+    <div class="score-card">
+      <div class="donut">${donutSVG(s.value, s.color, s.invert)}</div>
+      <div class="score-body">
+        <div class="row" style="gap: var(--s-3); flex-wrap: wrap;">
+          <h3>${s.name}</h3>
+          <span class="pill ${colorCls} dot">${scoreLabel(s)}</span>
+          ${s.invert ? '<span class="pill">סקאלה הפוכה</span>' : ''}
+        </div>
+        <div class="desc">${s.desc}</div>
+        <div class="score-bd">
+          <div class="col up">
+            <h5>↑ מה משפר</h5>
+            <ul>${s.up.map(i => `<li>${i}</li>`).join('')}</ul>
+          </div>
+          <div class="col dn">
+            <h5>↓ מה פוגע</h5>
+            <ul>${s.dn.map(i => `<li>${i}</li>`).join('')}</ul>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ============== EVENTS ============== */
+function bindEvents(){
+  // Side rail
+  els('.rail-link').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    goto(a.dataset.route);
+  }));
+  // Mobile tabs
+  els('.mt-link').forEach(b => b.addEventListener('click', () => goto(b.dataset.route)));
+
+  // Doc upload
+  const docUpload = el('#doc-upload');
+  if (docUpload) docUpload.addEventListener('change', () => handleDocUpload(docUpload));
+
+  // Size range
+  const range = el('#size-range');
+  if (range) range.addEventListener('input', () => {
+    state.size = +range.value;
+    renderBenefitCard();
+    renderCostTable();
+  });
+
+  // Scenario tabs
+  els('#scen-tabs .scenario-tab').forEach(b => b.addEventListener('click', () => {
+    els('#scen-tabs .scenario-tab').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.scenario = b.dataset.scen;
+    renderCostTable();
+  }));
+
+  // Trend period
+  const trendTabs = el('.screen[data-screen="market"] .tabs');
+  if (trendTabs){
+    els('.tab', trendTabs).forEach(b => b.addEventListener('click', () => {
+      els('.tab', trendTabs).forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      state.trendPeriod = +b.dataset.period;
+      renderTrendChart();
+    }));
+  }
+
+  // Hash changes
+  window.addEventListener('hashchange', () => {
+    const r = location.hash.slice(1) || 'dashboard';
+    if (state.route !== r) goto(r);
+  });
+}
+
+/* ============== INIT ============== */
+function init(){
+  // KPIs in hero based on baseline 90 sqm
+  const { save, pct } = calcBenefit(90);
+  el('#kpi-benefit').textContent = fmt.num(save);
+  el('#kpi-market').textContent = fmt.num(project.pricePerSqmMarket);
+  el('#kpi-gap').textContent = (pct*100).toFixed(1) + '%';
+
+  renderTimeline();
+  renderAlerts();
+  renderChangelog();
+  renderScoreSnapshot();
+
+  renderTaskTabs();
+  renderTaskList();
+
+  renderBenefitCard();
+  renderCostTable();
+
+  renderPOI();
+  renderComps();
+  renderListings();
+  renderNews();
+  renderUrbanDev();
+  renderDocs();
+  renderScores();
+
+  bindEvents();
+
+  // Initial route
+  const r = location.hash.slice(1) || 'dashboard';
+  goto(r);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
